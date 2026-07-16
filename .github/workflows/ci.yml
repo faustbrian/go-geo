@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Module integrity
+        run: go mod tidy -diff
+      - name: Vet
+        run: go vet ./...
+      - name: Lint
+        run: go run honnef.co/go/tools/cmd/staticcheck@2025.1.1 ./...
+      - name: Tests
+        run: go test ./...
+      - name: Exact coverage
+        run: ./scripts/check-coverage.sh
+      - name: Documentation and examples
+        run: |
+          test -z "$(go run golang.org/x/lint/golint@v0.0.0-20241112194109-818c5a804067 ./...)"
+          go list ./... >/dev/null
+          go test ./examples/...
+      - name: API compatibility
+        run: ./scripts/check-api.sh
+
+  race:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go test -race ./...
+
+  fuzz-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: FUZZ_TIME=5s ./scripts/fuzz-smoke.sh
+
+  numerical-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go test ./geodesy ./geotest -count=1
+      - run: go test ./wkb -run Differential -count=1
+
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go test ./... -run '^$' -bench . -benchmem -benchtime=1x
+
+  vulnerabilities:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
