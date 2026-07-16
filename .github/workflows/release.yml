@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    services:
+      postgis:
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: geo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d geo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Validate semantic tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]
+      - run: go mod tidy -diff
+      - run: go vet ./...
+      - run: go test -race ./...
+      - run: ./scripts/check-coverage.sh
+      - run: FUZZ_TIME=5s ./scripts/fuzz-smoke.sh
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
+      - name: PostGIS release integration
+        env:
+          POSTGIS_DSN: postgres://postgres:postgres@localhost:5432/geo?sslmode=disable
+        run: go test ./postgis -run TestPostGISIntegration -count=1 -v
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
