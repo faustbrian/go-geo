@@ -2,7 +2,7 @@
 
 ## Compatibility policy
 
-Before v1, minor versions may refine APIs with changelog and migration notes.
+Major versions may refine APIs with changelog and migration notes.
 At v1, exported APIs follow semantic versioning: incompatible changes require a
 new major module path. Numerical model constants, coordinate order, boundary
 semantics, canonical encodings, typed error identity, and default resource

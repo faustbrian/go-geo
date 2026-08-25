@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 func BenchmarkPolygonValidation(b *testing.B) {

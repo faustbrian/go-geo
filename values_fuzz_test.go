@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 func FuzzValueDecoding(f *testing.F) {

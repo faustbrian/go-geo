@@ -11,8 +11,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/wkb"
 )
 
 func TestValueCoversNullOwnershipAndInvalidInternalGeometry(t *testing.T) {

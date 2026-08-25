@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/wkb"
 )
 
 func BenchmarkLineStringEWKB(b *testing.B) {

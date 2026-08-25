@@ -1,42 +1,55 @@
 # Contributing
 
-Open an issue before proposing a new geometry family, CRS feature, numerical
-model, or dependency. Keep business rules such as addresses, carriers,
-geocoding, routing, and vendor APIs outside this module.
+## Before Editing
 
-Every change must preserve explicit longitude/latitude order, CRS behavior,
-immutability, typed errors, and resource bounds. Behavioral changes should begin
-with a failing test. Numerical claims require authoritative or independent
-evidence; codec changes require hostile cases and fuzzing.
+1. Read [`AGENTS.md`](AGENTS.md) and the affected module's goals and docs.
+2. Run `make inventory` and the narrow baseline gate for the module.
+3. Identify owned dependencies and reverse dependants in `modules.json`.
+4. Preserve unrelated work and generated/corpus provenance.
 
-Run before submitting:
+## Changes
 
-```sh
-gofmt -w <changed-go-files>
-go vet ./...
-test -z "$(go run golang.org/x/lint/golint@v0.0.0-20241112194109-818c5a804067 ./...)"
-go test ./...
-go test -race ./...
-./scripts/check-coverage.sh
-./scripts/check-api.sh
-./scripts/fuzz-smoke.sh
-go test ./... -run '^$' -bench . -benchtime=1x
-govulncheck ./...
+Keep commits focused and conventional. Update every affected changelog with
+the behavior and migration impact. Public API changes require compatibility
+evidence and documentation. Specification behavior requires a decision record,
+fixture coverage, and interoperability evidence.
+
+New direct dependencies and dependency updates must follow the
+[dependency governance policy](docs/dependency-governance.md). Package-local
+update bots are forbidden; the root policy owns every module and action update.
+
+Specification-backed changes must follow the
+[specification governance contract](docs/specification-governance.md), update
+the affected stable decision entries, and complete the Specification Decisions
+section of the pull request template. An unresolved interpretation or stale
+source pin is release-blocking; peer behavior cannot silently select policy.
+
+Do not add package-local workflows, permanent replacements, machine-specific
+paths, bypass flags, broad mutation exclusions, or aggregate quality metrics
+that hide a failing package.
+
+## Verification
+
+Run during development:
+
+```bash
+make inventory
+make specification-decisions
+make check MODULES=pkg/<library>
 ```
 
-PostGIS changes also require `POSTGIS_DSN=... go test ./postgis -run
-TestPostGISIntegration -count=1`. Update public documentation and
-`CHANGELOG.md`. Use conventional commits with a body that explains why.
+Before submitting a repository-wide change:
 
-Before the first release, `scripts/check-api.sh` compares the public API against
-`api/baseline.txt`. Regenerate that file only for an intentional public API
-change, after its tests and documentation are complete:
-
-```sh
-go run golang.org/x/exp/cmd/apidiff@v0.0.0-20260709172345-9ea1abe57597 \
-  -m -w api/baseline.txt github.com/faustbrian/golib/pkg/geo
+```bash
+make ci-changed BASE=origin/main
 ```
 
-New parser and constructor defects should add a minimized seed under the
-corresponding `testdata/fuzz/<Target>` directory so the ordinary test suite and
-future fuzz runs preserve the regression.
+The full scheduled and release gate is `make ci`. Report every unavailable or
+failing command; do not describe partial results as release-ready.
+
+## Adding A Module
+
+Follow [module lifecycle procedures](docs/module-lifecycle.md). New modules
+require an explicit purpose, ownership boundary, dependency review, package
+catalog entry, full quality gates, documentation, changelog, license, security
+policy, compatibility plan, and release dry-run.

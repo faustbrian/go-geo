@@ -9,7 +9,7 @@ import (
 	upstreamewkb "github.com/twpayne/go-geom/encoding/ewkb"
 	upstreamwkb "github.com/twpayne/go-geom/encoding/wkb"
 
-	"github.com/faustbrian/golib/pkg/geo/wkb"
+	"github.com/faustbrian/go-geo/wkb"
 )
 
 func TestPointEncodingMatchesGoGeom(t *testing.T) {

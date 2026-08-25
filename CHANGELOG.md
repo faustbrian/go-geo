@@ -6,12 +6,15 @@ versioning after its first release.
 
 ## Unreleased
 
+## 1.0.0 - 2026-08-25
+
 ### Documentation
 
 - Link the package README to the repository-wide Golib documentation portal.
 
 ### Changed
 
+- Publish the module from its standalone `github.com/faustbrian/go-geo` identity while preserving its documented API and behavior.
 - Execute API compatibility tooling against the isolated module graph so owned
   dependency source changes cannot conflict with release checksums.
 - Require Go 1.25.12 or newer so consumers receive the standard library

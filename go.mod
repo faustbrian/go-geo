@@ -1,4 +1,4 @@
-module github.com/faustbrian/golib/pkg/geo
+module github.com/faustbrian/go-geo
 
 go 1.26.6
 

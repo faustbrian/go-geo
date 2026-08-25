@@ -7,12 +7,12 @@ import (
 	"testing"
 	"testing/quick"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/geodesy"
-	"github.com/faustbrian/golib/pkg/geo/geohash"
-	"github.com/faustbrian/golib/pkg/geo/geojson"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
-	"github.com/faustbrian/golib/pkg/geo/wkt"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/geodesy"
+	"github.com/faustbrian/go-geo/geohash"
+	"github.com/faustbrian/go-geo/geojson"
+	"github.com/faustbrian/go-geo/wkb"
+	"github.com/faustbrian/go-geo/wkt"
 )
 
 func TestGeodesicDistanceSymmetryProperty(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 type geometryWire struct {

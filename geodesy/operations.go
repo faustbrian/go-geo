@@ -4,7 +4,7 @@ import (
 	"math"
 	"sort"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 // Model is the package-owned contract for a geodesic distance model.

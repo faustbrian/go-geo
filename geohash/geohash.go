@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 const (

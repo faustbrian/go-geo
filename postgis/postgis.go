@@ -12,8 +12,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/wkb"
 )
 
 // Value is a nullable, owned geometry suitable for database/sql and pgx.

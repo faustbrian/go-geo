@@ -3,8 +3,8 @@ package wkb_test
 import (
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/wkb"
 )
 
 func FuzzDecode(f *testing.F) {

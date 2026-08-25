@@ -5,9 +5,9 @@ import (
 	"math"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/geodesy"
-	"github.com/faustbrian/golib/pkg/geo/geotest"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/geodesy"
+	"github.com/faustbrian/go-geo/geotest"
 )
 
 func TestMeanEarthSphereSolvesQuarterEquator(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/twpayne/go-geom"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/adapter/gogeom"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/adapter/gogeom"
 )
 
 func main() {

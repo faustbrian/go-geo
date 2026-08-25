@@ -3,7 +3,7 @@ package geo_test
 import (
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 func FuzzGeometryConstructors(f *testing.F) {

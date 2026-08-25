@@ -5,7 +5,7 @@ package geotest
 import (
 	"math"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 // Tolerance combines an absolute floor and a scale-relative bound. A value is

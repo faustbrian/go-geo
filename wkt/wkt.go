@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 // Marshal encodes geometry as canonical two-dimensional WKT.

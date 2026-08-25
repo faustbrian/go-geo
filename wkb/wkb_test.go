@@ -7,9 +7,9 @@ import (
 	"math"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/wkb"
-	"github.com/faustbrian/golib/pkg/geo/wkt"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/wkb"
+	"github.com/faustbrian/go-geo/wkt"
 )
 
 func TestPointMatchesCanonicalLittleEndianWKBAndEWKB(t *testing.T) {

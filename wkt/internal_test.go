@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 func TestEWKTPrefixAndEncodedByteBoundaries(t *testing.T) {

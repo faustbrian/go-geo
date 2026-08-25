@@ -8,8 +8,8 @@ import (
 	"github.com/twpayne/go-geom"
 	geomwkb "github.com/twpayne/go-geom/encoding/ewkb"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/adapter/gogeom"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/adapter/gogeom"
 )
 
 func TestRoundTripPreservesGeometryAndSRID(t *testing.T) {

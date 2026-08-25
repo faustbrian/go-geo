@@ -3,8 +3,8 @@ package geojson_test
 import (
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/geojson"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/geojson"
 )
 
 func FuzzDecode(f *testing.F) {

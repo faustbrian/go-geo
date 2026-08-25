@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/faustbrian/golib/pkg/geo/geotest"
+	"github.com/faustbrian/go-geo/geotest"
 )
 
 func TestToleranceUsesAbsoluteAndRelativeBounds(t *testing.T) {

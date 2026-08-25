@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/geohash"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/geohash"
 )
 
 func TestEncodeMatchesCanonicalGeohashVector(t *testing.T) {

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 )
 
 func main() {

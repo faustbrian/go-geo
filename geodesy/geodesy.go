@@ -5,7 +5,7 @@ package geodesy
 import (
 	"math"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
+	geo "github.com/faustbrian/go-geo"
 	geographiclib "github.com/pymaxion/geographiclib-go/v2/geodesic"
 )
 

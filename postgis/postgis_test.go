@@ -7,8 +7,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
-	geo "github.com/faustbrian/golib/pkg/geo"
-	"github.com/faustbrian/golib/pkg/geo/postgis"
+	geo "github.com/faustbrian/go-geo"
+	"github.com/faustbrian/go-geo/postgis"
 )
 
 const geometryOID = 99999

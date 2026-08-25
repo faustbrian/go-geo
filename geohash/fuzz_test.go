@@ -3,7 +3,7 @@ package geohash_test
 import (
 	"testing"
 
-	"github.com/faustbrian/golib/pkg/geo/geohash"
+	"github.com/faustbrian/go-geo/geohash"
 )
 
 func FuzzDecode(f *testing.F) {
