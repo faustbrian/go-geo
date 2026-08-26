@@ -84,4 +84,4 @@ near-antipodal ellipsoidal cases can still have multiple or sensitive azimuths.
 **What evidence blocks a release?** The numerical/tolerance matrix, codec and
 PostGIS corpus, fuzz corpora, hostile-input tests, allocation budgets,
 dependency audit, race detector, vulnerability scan, and exact coverage gate
-are catalogued in [`docs/hardening.md`](hardening.md).
+are catalogued in [`docs/verification.md`](verification.md).

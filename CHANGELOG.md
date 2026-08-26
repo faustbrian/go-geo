@@ -1,10 +1,15 @@
 # Changelog
 
 All notable changes are documented here. The project follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and will use semantic
-versioning after its first release.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses semantic
+versioning.
 
 ## Unreleased
+
+### Documentation
+
+- Replace archived monorepo and dated hardening terminology with package-owned
+  documentation and numerical verification guidance.
 
 ## 1.0.0 - 2026-08-25
 

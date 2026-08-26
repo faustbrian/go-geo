@@ -32,5 +32,5 @@ advisory or will not receive one. Rerun it for every release and dependency
 upgrade. `simplefeatures` retracts v0.45.0 for a known bug; the selected v0.59.0
 is not retracted.
 
-See [the hardening matrix](hardening.md) for package-owned tolerances, linked
+See [the verification matrix](verification.md) for package-owned tolerances, linked
 algorithm boundaries, corpora, and benchmark evidence.

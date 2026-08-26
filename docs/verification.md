@@ -1,7 +1,7 @@
-# Numerical and interoperability hardening
+# Numerical and interoperability verification
 
-This document records the executable evidence and residual limits for the
-2026-07-16 hardening audit. It is a verification snapshot, not a promise that
+This document records executable evidence and residual numerical limits. It is
+not a promise that
 latency is identical on other machines or that dependency advisories cannot
 change after the audit date.
 

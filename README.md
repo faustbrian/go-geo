@@ -67,7 +67,7 @@ The complete exported API is published by
 [pkg.go.dev](https://pkg.go.dev/github.com/faustbrian/go-geo). Runnable programs
 live in [`examples`](examples), and detailed guidance lives in [`docs`](docs),
 including the [direct dependency inventory](docs/dependencies.md).
-The [hardening evidence](docs/hardening.md) records numerical tolerances,
+The [verification evidence](docs/verification.md) records numerical tolerances,
 interoperability and fuzz corpora, allocation baselines, and residual risks.
 
 ## Behavioral contract
@@ -115,7 +115,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 
 `geo` is available under the [MIT License](LICENSE).
 
-## Ecosystem
+## Documentation
 
-Use the [Golib documentation portal](https://github.com/faustbrian/golib/blob/main/docs/index.md)
-to choose companion packages, supported stacks, recipes, and operations guidance.
+Start with the [documentation index](docs/README.md) for models, precision,
+interoperability, security, performance, and adoption guidance.
