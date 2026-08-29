@@ -70,7 +70,7 @@ for its different mean-radius rounding; ellipsoidal comparison allows 1 mm.
 
 The complete per-surface tolerance rationale, including tiny, polar,
 antimeridian, exact-antipodal, and near-antipodal cases, is maintained in the
-[`hardening matrix`](hardening.md#numerical-conformance-and-tolerance-matrix).
+[`verification matrix`](verification.md#numerical-conformance-and-tolerance-matrix).
 
 Sources:
 

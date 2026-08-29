@@ -42,7 +42,7 @@ ellipsoidal inverse calculations, and pgx binary codecs.
 Executable allocation ceilings cover 1,000-point polygon validation,
 1,000-point geom conversion, 100,000-point WKB encoding, and pgx binary
 encode/scan. The dated measurement matrix is in
-[`hardening.md`](hardening.md#complexity-allocation-and-benchmark-baseline).
+[`verification.md`](verification.md#complexity-allocation-and-benchmark-baseline).
 
 ## Dependency isolation
 
@@ -77,4 +77,4 @@ go test ./wkb -run '^$' -fuzz '^FuzzDecode$' -fuzztime 1m
 
 Checked-in corpora live below each package's `testdata/fuzz` directory. Their
 coverage and callback bounds are catalogued in
-[`hardening.md`](hardening.md#fuzz-corpora-and-hostile-input-boundaries).
+[`verification.md`](verification.md#fuzz-corpora-and-hostile-input-boundaries).

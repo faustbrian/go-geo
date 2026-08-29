@@ -18,7 +18,7 @@ nil or invalid geometry. WKB callers choose byte order. All decoders apply
 The live PostGIS corpus exercises every geometry family, supported empty
 aggregate, GeoJSON/WKT/EWKT/WKB/EWKB representation, NDR and XDR byte order,
 SRID metadata, and 2D rejection on PostGIS 16 / 3.5 and 18 / 3.6. See
-[`hardening.md`](hardening.md#codec-and-postgis-interoperability-corpus).
+[`verification.md`](verification.md#codec-and-postgis-interoperability-corpus).
 
 ## geom adapter
 
