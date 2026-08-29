@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-geo",
+  "module": ".",
+  "package": "wkb",
+  "gate": "mutation",
+  "input_digest": "sha256:49b5ac3acb22161d8788a7c6bbf9dd3ecc9988fee2b22490ecf8ae4ae0462c96",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:63f55712d6a70cc7a39e8ed1637da6fc324db9af9c972f5b03221f3fb3090e6a",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.27.0",
+    "gremlins_binary_sha256": "sha256:6a2beddc477eb410f8a670b6c9049558563d3c4327498fe31604d31c773a959e"
+  },
+  "completed_at": "2026-08-29T04:23:32.265506Z"
+}

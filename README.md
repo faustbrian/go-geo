@@ -98,15 +98,15 @@ filtering, or unsupported GIS operations. `geodesy.Nearest` and
 ## Verification
 
 ```sh
-go test ./...
-go test -race ./...
-./scripts/check-coverage.sh
-./scripts/fuzz-smoke.sh
+make inventory
+make check
+make ci
 ```
 
-The CI matrix also verifies formatting, vetting, linting, vulnerabilities,
-authoritative numerical vectors, benchmarks, API compatibility, examples, and
-live PostgreSQL/PostGIS releases.
+The shared CI contract also verifies formatting, vetting, linting,
+vulnerabilities, authoritative numerical vectors, exact per-package coverage,
+mutation, benchmarks, API compatibility, examples, and live
+PostgreSQL/PostGIS releases.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 [CHANGELOG.md](CHANGELOG.md).
