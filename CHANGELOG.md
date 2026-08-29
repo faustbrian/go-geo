@@ -6,6 +6,11 @@ versioning.
 
 ## Unreleased
 
+### Changed
+
+- Adopt the checksum-verified `go-library-tools` v1.0.6 repository contract for
+  local and CI verification while retaining package-owned source and evidence.
+
 ### Documentation
 
 - Replace archived monorepo and dated hardening terminology with package-owned

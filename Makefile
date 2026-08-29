@@ -9,5 +9,8 @@ ci:
 	$(GOLIB) repository check
 	$(GOLIB) check --all
 
-inventory repository-check:
+inventory:
+	$(GOLIB) inventory
+
+repository-check:
 	$(GOLIB) repository check
