@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-geo",
+  "module": ".",
+  "package": "geojson",
+  "gate": "mutation",
+  "input_digest": "sha256:7acf5060676d16de00f0c25efdb0de6c4ef881b07cdd311fe20e4d55af505631",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:b6dac27a87504ca2fb5bcba87e1579da33945c3bb23a7a230517b04120a37e86",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.27.0",
+    "gremlins_binary_sha256": "sha256:6a2beddc477eb410f8a670b6c9049558563d3c4327498fe31604d31c773a959e"
+  },
+  "completed_at": "2026-08-29T04:21:52.003163Z"
+}
