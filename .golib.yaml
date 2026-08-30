@@ -19,6 +19,22 @@ api:
     path: api/baseline.txt
 operations:
 - module: "."
+  gate: interoperability
+  steps:
+  - type: go-test
+    packages: ["./wkb"]
+    run: '^TestPointEncodingMatchesGoGeom$'
+    count: 1
+    timeout: 20m
+- module: "."
+  gate: conformance
+  steps:
+  - type: go-test
+    packages: [".", "./geojson", "./wkt", "./wkb", "./geodesy", "./geohash"]
+    run: '^Test(PointUsesLongitudeLatitudeOrder|DecodeIsBoundedAndCRSExplicit|MarshalRejectsNilAndNonWGS84Geometry|EveryGeometryFamilyRoundTrips|FeaturePreservesRawPropertiesAndID|GeometryDecoderRejectsMalformedCoordinatesAndTopology|PolygonLocationMatchesOGCSimpleFeaturesVectors|PolygonRejectsDegenerateSelfIntersectingAndOutsideHoleTopology|PolygonAcceptsAndPreservesEitherWindingDirection|EveryGeometryFamilyAndEmptyCollectionRoundTrips|EveryGeometryFamilyRoundTripsInBothByteOrders|WKTRejectsMalformedDimensionsTopologyAndResourceExhaustion|DecoderRejectsHostileCountsTruncationAndTrailingBytes|PointWKTAndEWKTPreserveCoordinateOrderAndSRID|EWKTRequiresPositiveSRID|WKTRejectsInvalidMetadataAndEWKTPrefixes|PointMatchesCanonicalLittleEndianWKBAndEWKB|WKBAndEWKBSRIDContractsAreDistinct|EWKBRejectsInvalidAndMismatchedSRIDs|PointEncodingMatchesGoGeom|WGS84MatchesGeographicLibAuthoritativeExamples|WGS84MatchesGeographicLibEdgeDistanceVectors|GeodesyRejectsCRSMismatchAndMarksCoincidentBearingsUndefined|EncodeMatchesCanonicalGeohashVector|GeohashRejectsInvalidPrecisionHashAndCRS|CoverIsBoundedAndHandlesAntimeridian)$'
+    count: 1
+    timeout: 20m
+- module: "."
   gate: fuzz
   steps:
   - type: go-test

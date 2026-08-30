@@ -22,6 +22,7 @@
   "ignoreRegExpList": [
     "/`[^`\\n]+`/g",
     "/```[\\s\\S]*?```/g",
+    "/\\b[A-Z][A-Z0-9-]*-DEC-[0-9]{3}\\b/g",
     "/https?:\\/\\/[^\\s)]+/g"
   ],
   "language": "en,en-GB",
@@ -49,6 +50,7 @@
     "ECMAREGEXP",
     "EPSG",
     "EWKB",
+    "EWKBSRID",
     "EWKT",
     "Erigon",
     "Eventsourcing",
@@ -112,6 +114,7 @@
     "Packagist",
     "Pedersen",
     "Petstore",
+    "PostGIS",
     "RSASSA",
     "RUSTSEC",
     "Redpanda",
