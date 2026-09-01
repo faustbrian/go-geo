@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "decisions": [
+    {
+      "id": "GEO-GEOJSON-DEC-001",
+      "authoritative_sources": ["rfc7946-source"],
+      "executable_evidence": ["TestPointUsesLongitudeLatitudeOrder", "TestDecodeIsBoundedAndCRSExplicit", "TestMarshalRejectsNilAndNonWGS84Geometry"],
+      "fixtures": [],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["GeoJSON uses longitude-latitude positions with explicit EPSG:4326 metadata and no transformation."]
+    },
+    {
+      "id": "GEO-GEOJSON-DEC-002",
+      "authoritative_sources": ["rfc7946-source"],
+      "executable_evidence": ["TestEveryGeometryFamilyRoundTrips", "TestFeaturePreservesRawPropertiesAndID", "TestGeometryDecoderRejectsMalformedCoordinatesAndTopology"],
+      "fixtures": [],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["GeoJSON codecs preserve all seven two-dimensional geometry families and individual Features while rejecting unsupported dimensions."]
+    },
+    {
+      "id": "GEO-OGC-DEC-001",
+      "authoritative_sources": ["ogc-sfs-1.1-source"],
+      "executable_evidence": ["TestPolygonLocationMatchesOGCSimpleFeaturesVectors", "TestPolygonRejectsDegenerateSelfIntersectingAndOutsideHoleTopology", "TestPolygonAcceptsAndPreservesEitherWindingDirection"],
+      "fixtures": ["postgis/testdata/interoperability.json"],
+      "fuzz": ["FuzzGeometryConstructors"],
+      "interoperability_evidence": ["postgis/testdata/interoperability.json"],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["Polygon topology is planar after antimeridian unwrapping, preserves valid winding, and distinguishes Outside, Inside, and Boundary."]
+    },
+    {
+      "id": "GEO-OGC-DEC-002",
+      "authoritative_sources": ["ogc-sfa-1.2.1-source"],
+      "executable_evidence": ["TestEveryGeometryFamilyAndEmptyCollectionRoundTrips", "TestEveryGeometryFamilyRoundTripsInBothByteOrders", "TestWKTRejectsMalformedDimensionsTopologyAndResourceExhaustion", "TestDecoderRejectsHostileCountsTruncationAndTrailingBytes"],
+      "fixtures": ["postgis/testdata/interoperability.json"],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": ["postgis/testdata/interoperability.json"],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": ["wkb/differential_test.go"],
+      "differential_classification": "maintained peer agreement",
+      "public_behavior": ["WKT and WKB expose a bounded two-dimensional profile with explicit external CRS metadata and caller-selected WKB byte order."]
+    },
+    {
+      "id": "GEO-POSTGIS-DEC-001",
+      "authoritative_sources": ["postgis-ewkt-source"],
+      "executable_evidence": ["TestPointWKTAndEWKTPreserveCoordinateOrderAndSRID", "TestEWKTRequiresPositiveSRID", "TestWKTRejectsInvalidMetadataAndEWKTPrefixes"],
+      "fixtures": ["postgis/testdata/interoperability.json"],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": ["postgis/testdata/interoperability.json"],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["EWKT requires one positive top-level SRID prefix and preserves coordinates without transformation."]
+    },
+    {
+      "id": "GEO-POSTGIS-DEC-002",
+      "authoritative_sources": ["postgis-ewkb-source"],
+      "executable_evidence": ["TestPointMatchesCanonicalLittleEndianWKBAndEWKB", "TestWKBAndEWKBSRIDContractsAreDistinct", "TestEWKBRejectsInvalidAndMismatchedSRIDs", "TestPointEncodingMatchesGoGeom"],
+      "fixtures": ["postgis/testdata/interoperability.json"],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": ["postgis/testdata/interoperability.json"],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": ["wkb/differential_test.go"],
+      "differential_classification": "maintained peer agreement",
+      "public_behavior": ["EWKB requires a positive top-level SRID and rejects missing or conflicting nested CRS metadata."]
+    },
+    {
+      "id": "GEO-EPSG-DEC-001",
+      "authoritative_sources": ["epsg-4326-source"],
+      "executable_evidence": ["TestWGS84MatchesGeographicLibAuthoritativeExamples", "TestWGS84MatchesGeographicLibEdgeDistanceVectors", "TestGeodesyRejectsCRSMismatchAndMarksCoincidentBearingsUndefined", "TestPostGISIntegration"],
+      "fixtures": ["postgis/testdata/interoperability.json"],
+      "fuzz": ["FuzzModels"],
+      "interoperability_evidence": ["postgis/testdata/interoperability.json"],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["WGS84 geodesy requires EPSG:4326, exposes named spherical and ellipsoidal models, and performs no CRS transformation."]
+    },
+    {
+      "id": "GEO-GEOHASH-DEC-001",
+      "authoritative_sources": ["epsg-4326-source"],
+      "executable_evidence": ["TestEncodeMatchesCanonicalGeohashVector", "TestGeohashRejectsInvalidPrecisionHashAndCRS", "TestCoverIsBoundedAndHandlesAntimeridian"],
+      "fixtures": [],
+      "fuzz": ["FuzzDecode"],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": ["Geohash is a bounded lowercase indexing profile over explicit EPSG:4326 coordinates, not a distance proof."]
+    }
+  ]
+}

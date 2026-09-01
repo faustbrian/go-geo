@@ -246,17 +246,32 @@
       "required_services": [],
       "build_tags": [],
       "test_tags": [],
-      "interoperability_tools": [],
-      "specifications": [],
-      "conformance_corpora": [],
-      "provenance": [],
+      "interoperability_tools": [
+        "github.com/twpayne/go-geom v1.6.1",
+        "PostGIS 3.5 and 3.6 live corpus"
+      ],
+      "specifications": [
+        "RFC 7946 GeoJSON",
+        "OGC Simple Features for SQL 1.1",
+        "OGC Simple Feature Access Part 1: Common Architecture 1.2.1",
+        "EPSG Geodetic Parameter Dataset v13.102",
+        "PostGIS 3.6.4 EWKT and EWKB extensions"
+      ],
+      "conformance_corpora": [
+        "postgis/testdata/interoperability.json",
+        "wkb/differential_test.go"
+      ],
+      "provenance": [
+        "specification/manifest.tsv",
+        "specification/maintained-peers.json"
+      ],
       "goal_files": [],
       "goal_status": "not-applicable",
       "goal_evidence": [],
       "gates": {
         "api_compatibility": true,
         "benchmarks": true,
-        "conformance": false,
+        "conformance": true,
         "coverage": true,
         "documentation": true,
         "fuzz": true,

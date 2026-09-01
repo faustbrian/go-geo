@@ -8,13 +8,32 @@ versioning.
 
 ### Changed
 
-- Adopt the checksum-verified `go-library-tools` v1.0.6 repository contract for
-  local and CI verification while retaining package-owned source and evidence.
+- Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
+  shared workflow so local and hosted gates enforce specification governance
+  while retaining package-owned source and evidence.
 
 ### Documentation
 
 - Replace archived monorepo and dated hardening terminology with package-owned
   documentation and numerical verification guidance.
+- Publish the standards decision register, pinned authority monitoring,
+  conformance bindings, maintained-peer evidence, and specification-aware
+  change control. The current decision digests are recorded below.
+
+### Specification Decisions
+
+<!-- Canonical digests are maintained with specification/decision-history.json. -->
+
+- GEO-GEOJSON-DEC-001 sha256:5a7226c4cc2b27171488e0679ce794a0a7f755db4c21867f9be83ecd9404e0cf
+- GEO-GEOJSON-DEC-002 sha256:cef5811efc3ebad7e9ca79ecfed36ca10073e002196c8c42c61687985bb61267
+- GEO-OGC-DEC-001 sha256:04b721e5e1b367f53c5ca93b28b0c4e853943d435996acb027af1dc32825eee0
+- GEO-OGC-DEC-002 sha256:6964003803fd82e62b195afed7beae6bf0b73a89fb3720f7c1b8f223f57406ea
+- GEO-POSTGIS-DEC-001 sha256:b9f01928227d261d98696daf88dcd8f1b8a869134a4bed1163b9289cf6e40f18
+- GEO-POSTGIS-DEC-002 sha256:5170a4305ec67948e5faeebf7690e98d935544ed97afa910fea8ef4f231ba3eb
+- GEO-EPSG-DEC-001 sha256:3e420bc9960d2f42169f0bfda8ec50fd3bb752ae0be8d52c7760cd260b32b373
+- GEO-GEOHASH-DEC-001 sha256:0e13343cad9cf9d001adc08f486dfb94bbdc311b2bdfad8936b97a68f27d67cc
+
+[Decision register](docs/specification-decisions.md)
 
 ## 1.0.0 - 2026-08-25
 
