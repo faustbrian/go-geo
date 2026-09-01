@@ -24,7 +24,7 @@ addresses, transform CRSs, or replace PostGIS.
 go get github.com/faustbrian/go-geo
 ```
 
-The module requires Go 1.25.12 or newer.
+The module requires Go 1.26.6 or newer.
 
 ## Coordinate-order quickstart
 
@@ -71,6 +71,9 @@ The [verification evidence](docs/verification.md) records numerical tolerances,
 interoperability and fuzz corpora, allocation baselines, and residual risks.
 Observable standards interpretations are recorded in the
 [specification decision register](docs/specification-decisions.md).
+See the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md)
+and [package-family selection guidance](https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/design-language.md#package-families-and-selection)
+for the shared design language this module follows.
 
 ## Behavioral contract
 
@@ -101,6 +104,7 @@ filtering, or unsupported GIS operations. `geodesy.Nearest` and
 
 ```sh
 make inventory
+make cohesion
 make check
 make ci
 ```
