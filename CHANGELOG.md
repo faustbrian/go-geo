@@ -8,8 +8,9 @@ versioning.
 
 ### Changed
 
-- Adopt the checksum-verified `go-library-tools` v1.0.13 repository contract for
-  local and CI verification while retaining package-owned source and evidence.
+- Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
+  shared workflow so local and hosted gates enforce specification governance
+  while retaining package-owned source and evidence.
 
 ### Documentation
 
