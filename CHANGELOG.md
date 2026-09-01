@@ -11,6 +11,9 @@ versioning.
 - Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
   shared workflow so local and hosted gates enforce specification governance
   while retaining package-owned source and evidence.
+- Adopt the checksum-verified `go-library-tools` v1.3.0 CLI, schema-v2 cohesion
+  metadata, and repository-local cohesion gate while retaining package-owned
+  source and evidence.
 
 ### Documentation
 
@@ -19,6 +22,8 @@ versioning.
 - Publish the standards decision register, pinned authority monitoring,
   conformance bindings, maintained-peer evidence, and specification-aware
   change control. The current decision digests are recorded below.
+- Link the module to the immutable v1.3.0 Golib ecosystem guidance and correct
+  the documented minimum Go version to 1.26.6.
 
 ### Specification Decisions
 

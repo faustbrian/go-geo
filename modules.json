@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "repository": "github.com/faustbrian/go-geo",
   "go_version": "1.26.6",
   "modules": [
@@ -233,6 +233,103 @@
       "family_label": "Domain Utilities",
       "family_description": "Domain-specific immutable values, algorithms, parsers, proofs, and calculations.",
       "family_order": 8,
+      "cohesion": {
+        "family": "domain-utilities",
+        "secondary_capabilities": [
+          "data-encoding",
+          "database-and-storage",
+          "protocols-and-schemas",
+          "testing-and-conformance"
+        ],
+        "responsibility": "Provide immutable geospatial values, bounded geometry and geodesy operations, interoperable codecs, PostGIS mapping, and deterministic test helpers.",
+        "non_goals": [
+          "Provide geocoding, routing, address models, CRS transformation, a spatial database, or a replacement for PostGIS."
+        ],
+        "public_package_identifier": "geo",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-geo"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-geo": "Use for immutable coordinate, CRS, bounds, geometry, limits, and typed-error primitives.",
+          "github.com/faustbrian/go-geo/adapter/gogeom": "Use only when converting between go-geo and github.com/twpayne/go-geom values.",
+          "github.com/faustbrian/go-geo/geodesy": "Use for spherical and WGS84 ellipsoidal distance, bearing, destination, envelope, and bounded nearest calculations.",
+          "github.com/faustbrian/go-geo/geohash": "Use for bounded geohash encoding, decoding, neighbor lookup, and covers.",
+          "github.com/faustbrian/go-geo/geojson": "Use for bounded RFC 7946 geometry and feature encoding and decoding.",
+          "github.com/faustbrian/go-geo/geotest": "Use in tests for authoritative vectors and tolerance-aware assertions.",
+          "github.com/faustbrian/go-geo/postgis": "Use for caller-owned pgx/PostGIS geometry and geography mapping and reviewed spatial SQL fragments.",
+          "github.com/faustbrian/go-geo/wkb": "Use for bounded WKB and EWKB encoding and decoding.",
+          "github.com/faustbrian/go-geo/wkt": "Use for bounded WKT and EWKT encoding and decoding."
+        },
+        "lifecycle_status": "active",
+        "maturity": "stable",
+        "construction_styles": [
+          "plain-function",
+          "validated-value"
+        ],
+        "lifecycle_styles": [
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "copy"
+          ],
+          "runtime_resources": "caller",
+          "background_work": "none"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [
+          "github.com/faustbrian/go-geo/adapter/gogeom"
+        ],
+        "companions": [
+          "github.com/faustbrian/go-geo/geodesy",
+          "github.com/faustbrian/go-geo/geohash",
+          "github.com/faustbrian/go-geo/geojson",
+          "github.com/faustbrian/go-geo/geotest",
+          "github.com/faustbrian/go-geo/postgis",
+          "github.com/faustbrian/go-geo/wkb",
+          "github.com/faustbrian/go-geo/wkt"
+        ],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [
+          "postgis",
+          "postgresql"
+        ],
+        "supported_protocols": [
+          "geojson",
+          "postgis-ewkb",
+          "postgis-ewkt",
+          "wkb",
+          "wkt"
+        ],
+        "documentation": {
+          "readme": "README.md",
+          "api": "https://pkg.go.dev/github.com/faustbrian/go-geo",
+          "adoption": "docs/adoption.md",
+          "security": "SECURITY.md",
+          "compatibility": "docs/adoption.md",
+          "performance": "docs/security-and-performance.md",
+          "examples": "examples/README.md",
+          "faq": "docs/adoption.md",
+          "changelog": "CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-geo",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "not-started",
+          "hardening": "not-started",
+          "release": "not-started"
+        }
+      },
       "version": "1.0.0",
       "tag_prefix": "v",
       "owned_dependencies": [],
