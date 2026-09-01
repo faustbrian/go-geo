@@ -69,6 +69,8 @@ live in [`examples`](examples), and detailed guidance lives in [`docs`](docs),
 including the [direct dependency inventory](docs/dependencies.md).
 The [verification evidence](docs/verification.md) records numerical tolerances,
 interoperability and fuzz corpora, allocation baselines, and residual risks.
+Observable standards interpretations are recorded in the
+[specification decision register](docs/specification-decisions.md).
 
 ## Behavioral contract
 

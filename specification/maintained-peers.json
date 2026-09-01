@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-30",
+  "peers": [
+    {
+      "id": "go-geom",
+      "version": "v1.6.1",
+      "source": "https://raw.githubusercontent.com/twpayne/go-geom/v1.6.1/encoding/wkb/wkb.go",
+      "source_sha256": "105a005fb1ea7932c4ad2d846b8ca32da0f5c08634cdafc2128f30321def6de7",
+      "observed_behavior": {
+        "wkb": "Produces identical two-dimensional Point WKB bytes in NDR and XDR order.",
+        "ewkb": "Produces identical two-dimensional Point EWKB bytes with SRID 4326 in NDR and XDR order."
+      },
+      "executable_evidence": "wkb/differential_test.go:TestPointEncodingMatchesGoGeom"
+    },
+    {
+      "id": "postgis",
+      "version": "3.5 and 3.6 maintained release lines",
+      "source": "https://raw.githubusercontent.com/postgis/postgis/3.6.4/doc/bnf-wkb.txt",
+      "source_sha256": "b10b8530de73d46489c91ae80319fa3b572879043faf084dccde391765fc148b",
+      "observed_behavior": {
+        "codecs": "The live corpus agrees on GeoJSON, WKT, EWKT, WKB, and EWKB semantics for every supported geometry family and both WKB byte orders.",
+        "spatial": "The live corpus agrees on polygon location and WGS84 geography distance within the documented tolerances."
+      },
+      "executable_evidence": "postgis/integration_test.go:TestPostGISIntegration"
+    }
+  ],
+  "local_profile": {
+    "dimensions": "Two-dimensional coordinates only.",
+    "crs": "Explicit positive SRID metadata with no implicit transformation.",
+    "geojson": "RFC 7946 longitude-latitude EPSG:4326 profile.",
+    "extended_codecs": "PostGIS EWKT and EWKB with mandatory positive top-level SRID metadata."
+  },
+  "classification": "maintained peer agreement"
+}

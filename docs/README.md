@@ -14,6 +14,7 @@
 
 - [Interoperability](interoperability.md)
 - [Numerical verification](verification.md)
+- [Specification decisions](specification-decisions.md)
 
 ## Operations and security
 
