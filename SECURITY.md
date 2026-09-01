@@ -27,4 +27,4 @@ Local release evidence includes bounded fuzz smoke tests with durable hostile
 corpora, race tests, exact coverage, API compatibility, allocation budgets,
 benchmarks, `govulncheck`, and live tests against every supported PostGIS line.
 The numerical, interoperability, fuzz, benchmark, and dependency evidence is
-indexed in [the hardening matrix](docs/hardening.md).
+indexed in [the verification record](docs/verification.md).
