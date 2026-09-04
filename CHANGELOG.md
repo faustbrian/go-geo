@@ -8,6 +8,14 @@ versioning.
 
 ### Changed
 
+- Adopt the checksum-verified `go-library-tools` v1.4.0 CLI and immutable W14
+  reusable workflow, including strict online specification validation, without
+  changing the geospatial API or runtime behavior.
+
+- Refresh the EPSG:4326 and release-history authority-body pins after reviewing
+  mutable page presentation changes and confirming the v13.102 WKT definition
+  and release status are unchanged.
+
 - Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
   shared workflow so local and hosted gates enforce specification governance
   while retaining package-owned source and evidence.
@@ -16,6 +24,9 @@ versioning.
   source and evidence.
 
 ### Documentation
+
+- Link ecosystem and Domain utilities family guidance to the immutable v1.4.0
+  documentation release.
 
 - Replace archived monorepo and dated hardening terminology with package-owned
   documentation and numerical verification guidance.
