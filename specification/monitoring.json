@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-08-30",
+  "reviewed_at": "2026-09-04",
   "review_interval_days": 90,
   "authorities": [
     {
@@ -49,14 +49,14 @@
       "kind": "registry",
       "version": "EPSG Dataset v13.102",
       "url": "https://epsg.org/crs/wkt/id/4326",
-      "sha256": "eec5255ed4f8c453dfbf07b6bac88eac92ebbde956e924280abc9c79ae075e61",
+      "sha256": "cd1a631959184aa8c51a04cd950b68091f9e0a89ca6211c8ef81ef3d14098c83",
       "specifications": ["EPSG Geodetic Parameter Dataset v13.102"]
     },
     {
       "id": "epsg-releases",
       "kind": "releases",
       "url": "https://epsg.org/whatsnew.html",
-      "sha256": "95ed74d1f811898949fae13466608fa8b41323d6f11e7132328e3bcf132deb2d",
+      "sha256": "ee66d04bd49dd2de47b3fa91e421754e76aa873b3d2a984c9ed31b420967a53c",
       "specifications": ["EPSG Geodetic Parameter Dataset v13.102"]
     },
     {
