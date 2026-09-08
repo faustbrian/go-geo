@@ -59,6 +59,10 @@ func TestFromGoGeomEnforcesDimensionsAndResourceLimits(t *testing.T) {
 	if _, err := gogeom.FromGoGeom(line, limits); err != nil {
 		t.Fatalf("exact point limit error = %v", err)
 	}
+	limits.MaxPoints = 4
+	if _, err := gogeom.FromGoGeom(line, limits); err != nil {
+		t.Fatalf("one-below point limit error = %v", err)
+	}
 
 	encoded, err := geomwkb.Marshal(line, binary.LittleEndian)
 	if err != nil {
@@ -67,6 +71,14 @@ func TestFromGoGeomEnforcesDimensionsAndResourceLimits(t *testing.T) {
 	limits.MaxEncodedBytes = int64(len(encoded))
 	if _, err := gogeom.FromGoGeom(line, limits); err != nil {
 		t.Fatalf("exact encoded byte limit error = %v", err)
+	}
+	limits.MaxEncodedBytes = int64(len(encoded) + 1)
+	if _, err := gogeom.FromGoGeom(line, limits); err != nil {
+		t.Fatalf("one-below encoded byte limit error = %v", err)
+	}
+	limits.MaxEncodedBytes = int64(len(encoded) - 1)
+	if _, err := gogeom.FromGoGeom(line, limits); !errors.Is(err, geo.ErrEncoding) {
+		t.Fatalf("one-above encoded byte limit error = %v, want ErrEncoding", err)
 	}
 }
 

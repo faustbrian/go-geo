@@ -72,7 +72,8 @@ Every fuzz target has inline seeds plus a checked-in corpus under its package's
 | `FuzzGeometryConstructors` | Invalid rings, self-crossing coordinate orders, holes, reversed winding, oversized point arrays, and excessive collection depth. |
 | `FuzzValueDecoding` | Scalar, CRS, and coordinate JSON/text with non-finite values, signed zero, malformed separators, and numeric extremes. |
 | `geodesy.FuzzModels` | Poles, antipodes, inverse/direct composition, and finite output. |
-| `adapter/gogeom.FuzzFromGoGeom` | Malformed flat coordinate storage, NaN, infinity, and point limits. |
+| `adapter/gogeom.FuzzFromGoGeom` | Legacy-facade parity for malformed coordinates, nested collections, cycles, nil children, depth 31/32/33, NaN, infinity, and limits. |
+| `adapters/geom.FuzzFromGoGeom` | Canonical-adapter malformed coordinates, nested collections, cycles, nil children, depth 31/32/33, NaN, infinity, and limits. |
 | `geojson.FuzzDecode` | Malformed JSON, deep collections, topology, coordinate arity, and encoded-size limits. |
 | `wkt.FuzzDecode` | Malformed tokens and numbers, dimensional markers, deep collections, counts, and trailing input. |
 | `wkb.FuzzDecode` | Byte order, flags, malformed lengths, integer overflow, truncation, nesting, and SRID. |
@@ -91,13 +92,16 @@ tests.
 The reproducible command is:
 
 ```sh
-go test . ./geodesy ./wkb ./adapter/gogeom ./postgis \
+go test . ./geodesy ./wkb ./adapter/gogeom ./adapters/geom ./postgis \
   -run '^$' -bench . -benchmem -benchtime=100x -count=3
 ```
 
-The following medians were measured on an Apple M4 Max (`darwin/arm64`) with
-Go 1.25.12 on 2026-07-16. Time values are observational baselines; allocation
-budgets are executable regression tests with deliberately higher ceilings.
+Except for the adapter rows identified below, the following medians were
+measured on an Apple M4 Max (`darwin/arm64`) with Go 1.25.12 on 2026-07-16.
+The adapter rows are observations from the required aggregate run on the same
+hardware with Go 1.26.6 on 2026-09-06. Time values are observational baselines;
+allocation budgets are executable regression tests with deliberately higher
+ceilings.
 
 | Operation | Size | Median time | Bytes/op | Allocs/op | Enforced allocation ceiling |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -106,8 +110,12 @@ budgets are executable regression tests with deliberately higher ceilings.
 | WGS84 inverse | one pair | 727 ns | 0 | 0 | 0 observed |
 | EWKB marshal | 100,000 points | 765 us | 1,605,680 | 2 | 3 |
 | EWKB unmarshal | 100,000 points | 1.40 ms | 8,011,828 | 3 | observational |
-| geom to package model | 1,000 points | 22.0 us | 114,864 | 11 | 16 |
-| package model to geom | 1,000 points | 13.6 us | 49,312 | 10 | 16 |
+| geom to package model (historical, Go 1.25.12) | 1,000 points | 22.0 us | 114,864 | 11 | 16 |
+| package model to geom (historical, Go 1.25.12) | 1,000 points | 13.6 us | 49,312 | 10 | 16 |
+| legacy facade: geom to package model (Go 1.26.6) | 1,000 points | 27.1 us | 114,864 | 11 | 16 |
+| legacy facade: package model to geom (Go 1.26.6) | 1,000 points | 12.4 us | 49,312 | 10 | 16 |
+| canonical adapter: geom to package model (Go 1.26.6) | 1,000 points | 21.6 us | 114,864 | 11 | 16 |
+| canonical adapter: package model to geom (Go 1.26.6) | 1,000 points | 12.5 us | 49,312 | 10 | 16 |
 | pgx binary encode | one point | 175 ns | 176 | 4 | 8 |
 | pgx binary scan | one point | 195 ns | 160 | 3 | 8 |
 

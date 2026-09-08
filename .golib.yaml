@@ -48,6 +48,11 @@ operations:
     budget: 10000x
     timeout: 20m
   - type: go-test
+    packages: ["./adapters/geom"]
+    fuzz: '^FuzzFromGoGeom$'
+    budget: 10000x
+    timeout: 20m
+  - type: go-test
     packages: ["./geodesy"]
     fuzz: '^FuzzModels$'
     budget: 10000x

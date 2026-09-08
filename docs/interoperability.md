@@ -22,9 +22,27 @@ SRID metadata, and 2D rejection on PostGIS 16 / 3.5 and 18 / 3.6. See
 
 ## geom adapter
 
-`adapter/gogeom` converts through canonical EWKB. Only two-dimensional layouts
-with positive SRIDs are accepted. The dependency remains outside the root
-model, so callers do not inherit its mutability or public API.
+`adapters/geom` (package `geogeom`) is the canonical conversion boundary.
+`adapter/gogeom` is a deprecated thin facade with the support interval and
+migration forms documented in [`adoption.md`](adoption.md). Both paths convert
+through canonical little-endian EWKB, accept only two-dimensional layouts with
+positive SRIDs, preserve root error types and causes, and perform no CRS
+transformation.
+
+Inputs remain caller-owned. Do not mutate a `geom.T` concurrently with a
+conversion. Returned `geom.T` values are newly owned by the caller, and
+returned `geo.Geometry` values are immutable; neither direction retains a
+mutable slice alias. Calls are synchronous, stateless, concurrency-safe under
+that ownership rule, and O(n) in geometry size and allocation.
+
+Collections receive an iterative structural check before go-geom's recursive
+layout and EWKB operations. That pass rejects nil children and cycles, counts
+the outer and nested geometries, and caps effective depth at 32 even when a
+larger limit is supplied. Structural failures precede collection layout and
+SRID checks. A second iterative pass then cumulatively bounds descendant
+points before marshal. Valid direct, nested, mixed-kind, and empty XY
+collections preserve child order, type, coordinates, and SRID without the
+`GeometryCollection.FlatCoords` panic present in v1.0.0.
 
 ## database/sql
 

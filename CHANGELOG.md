@@ -6,6 +6,29 @@ versioning.
 
 ## Unreleased
 
+## 1.1.0 - Unreleased
+
+### Added
+
+- Add `adapters/geom` (package `geogeom`) as the canonical two-function
+  go-geom conversion boundary while retaining `adapter/gogeom` as a deprecated
+  compatibility facade.
+
+### Fixed
+
+- Convert bounded XY `GeometryCollection` values without the v1.0.0
+  `FlatCoords` panic. Nil children, cycles, depth above 32, and cumulative
+  geometry limit violations now return typed errors before recursive upstream
+  work. Cumulative point limits are checked after bounded layout and SRID
+  validation but before marshal. Structural failures precede layout and SRID
+  errors on multi-fault collections.
+
+### Migration
+
+- Replace `github.com/faustbrian/go-geo/adapter/gogeom` with
+  `github.com/faustbrian/go-geo/adapters/geom`. Existing qualifiers can remain
+  `gogeom` through an import alias; new code should use `geogeom`.
+
 ### Changed
 
 - Adopt the checksum-verified `go-library-tools` v1.4.0 CLI and immutable W14
@@ -15,6 +38,10 @@ versioning.
 - Refresh the EPSG:4326 and release-history authority-body pins after reviewing
   mutable page presentation changes and confirming the v13.102 WKT definition
   and release status are unchanged.
+
+- Refresh the OGC SFA release-catalogue URL and authority-body pin after
+  reviewing site presentation changes and confirming SFA 1.2.1 / OGC
+  06-103r4 remains the current normative source.
 
 - Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
   shared workflow so local and hosted gates enforce specification governance

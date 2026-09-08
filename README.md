@@ -55,13 +55,17 @@ transformation.
 ## Packages
 
 - `geo`: values, limits, typed errors, bounds, geometry, containment, equality.
+- `adapters/geom`: canonical conversion between immutable `geo` values and
+  caller-owned `github.com/twpayne/go-geom` values.
+- `adapter/gogeom`: deprecated compatibility facade for `adapters/geom`.
 - `geodesy`: named sphere/ellipsoid models, bearings, destinations, envelopes,
   measurements, and bounded in-memory nearest ranking.
-- `geojson`, `wkt`, `wkb`: bounded canonical codecs.
 - `geohash`: encode, decode, neighbors, and bounded covers.
+- `geojson`: bounded RFC 7946 geometry and feature codecs.
 - `postgis`: nullable scanner/valuer, pgx codec, and reviewed SQL fragments.
-- `adapter/gogeom`: isolated conversion to and from `geom`.
-- `geotest`: authoritative vectors and tolerance-aware assertions.
+- `wkb`: bounded canonical WKB and EWKB codecs.
+- `wkt`: bounded canonical WKT and EWKT codecs.
+- `geotest`: test-only authoritative vectors and tolerance-aware assertions.
 
 The complete exported API is published by
 [pkg.go.dev](https://pkg.go.dev/github.com/faustbrian/go-geo). Runnable programs
