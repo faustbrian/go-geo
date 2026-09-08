@@ -13,6 +13,7 @@
 ## Compatibility and conformance
 
 - [Interoperability](interoperability.md)
+- [Adapter migration and compatibility](adoption.md#compatibility-policy)
 - [Numerical verification](verification.md)
 - [Specification decisions](specification-decisions.md)
 

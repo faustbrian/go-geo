@@ -3,7 +3,7 @@ rfc7946	RFC 7946	all	normative-specification	https://www.rfc-editor.org/rfc/rfc7
 rfc7946-errata	RFC 7946	all	errata	https://errata.rfc-editor.org/rfc7946	951e50d92a2ea4f04a678da0e2d61bb8d0363e0ec46bb854d8b6d4458f0b2b45	pinned
 ogc-sfs-1.1	OGC 99-049	all	normative-specification	https://docs.ogc.org/is/99-049/99-049.pdf	253bc06c81cda268d35a1cb3d92311ce78886128e6ea54c45fd899e5e5f4caae	pinned
 ogc-sfa-1.2.1	OGC 06-103r4	all	normative-specification	https://docs.ogc.org/is/06-103r4/06-103r4.pdf	4e64b5a22815a680e24c8d07af5d86df3abebc0b9bb7f40939a0c539dd3d56a9	pinned
-ogc-sfa-releases	current catalogue	Simple Feature Access	release-catalogue	https://www.ogc.org/standard/sfa/	db39e5e3459b87fbdd890b59b5ed4210eb9015ee7b55b575e88a30e00caa0134	pinned
+ogc-sfa-releases	current catalogue	Simple Feature Access	release-catalogue	https://www.ogc.org/standards/sfa/	bd515ae8eae361887276964e103a701b4ea26c2918f3c2930592d7ba6bcb7eb6	pinned
 epsg-4326	EPSG Dataset v13.102	EPSG:4326	registry-definition	https://epsg.org/crs/wkt/id/4326	cd1a631959184aa8c51a04cd950b68091f9e0a89ca6211c8ef81ef3d14098c83	pinned
 epsg-releases	EPSG Dataset v13.102	all	release-history	https://epsg.org/whatsnew.html	ee66d04bd49dd2de47b3fa91e421754e76aa873b3d2a984c9ed31b420967a53c	pinned
 postgis-ewkt	PostGIS 3.6.4	EWKT grammar	extension-specification	https://raw.githubusercontent.com/postgis/postgis/3.6.4/doc/bnf-wkt.txt	4ba64529d54b08c6379b0cfafec9f9715a59146f3803e4ffcc170c127d37f3bd	pinned

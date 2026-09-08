@@ -34,6 +34,18 @@
         },
         {
           "module_directory": ".",
+          "directory": "adapters/geom",
+          "name": "geogeom",
+          "import_path": "github.com/faustbrian/go-geo/adapters/geom",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
           "directory": "examples/adapter",
           "name": "main",
           "import_path": "github.com/faustbrian/go-geo/examples/adapter",
@@ -251,7 +263,8 @@
         ],
         "package_selection": {
           "github.com/faustbrian/go-geo": "Use for immutable coordinate, CRS, bounds, geometry, limits, and typed-error primitives.",
-          "github.com/faustbrian/go-geo/adapter/gogeom": "Use only when converting between go-geo and github.com/twpayne/go-geom values.",
+          "github.com/faustbrian/go-geo/adapter/gogeom": "Use only as the deprecated compatibility facade for go-geom conversion.",
+          "github.com/faustbrian/go-geo/adapters/geom": "Use for bounded, ownership-safe conversion between go-geo and github.com/twpayne/go-geom values.",
           "github.com/faustbrian/go-geo/geodesy": "Use for spherical and WGS84 ellipsoidal distance, bearing, destination, envelope, and bounded nearest calculations.",
           "github.com/faustbrian/go-geo/geohash": "Use for bounded geohash encoding, decoding, neighbor lookup, and covers.",
           "github.com/faustbrian/go-geo/geojson": "Use for bounded RFC 7946 geometry and feature encoding and decoding.",
@@ -279,7 +292,8 @@
         },
         "optional_owned_dependencies": [],
         "adapters": [
-          "github.com/faustbrian/go-geo/adapter/gogeom"
+          "github.com/faustbrian/go-geo/adapter/gogeom",
+          "github.com/faustbrian/go-geo/adapters/geom"
         ],
         "companions": [
           "github.com/faustbrian/go-geo/geodesy",
@@ -325,7 +339,7 @@
         },
         "known_good_compatibility_sets": [],
         "delivery": {
-          "implementation": "not-started",
+          "implementation": "in-progress",
           "hardening": "not-started",
           "release": "not-started"
         }

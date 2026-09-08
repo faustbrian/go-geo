@@ -1,4 +1,13 @@
 {
   "schema_version": 1,
-  "packages": []
+  "packages": [
+    {
+      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+      "gremlins_version": "v0.6.0",
+      "module_directory": ".",
+      "package_directory": "adapter/gogeom",
+      "reason": "The compatibility package contains direct delegations only; the complete enabled Gremlins operator set discovers no viable transformations.",
+      "source_digest": "078b7e3ae8e35595d7c3dd354c1021309977c8b6d13c3854cb388c109db4ea74"
+    }
+  ]
 }

@@ -14,6 +14,32 @@ with the checked-in `api/baseline.txt`. Regenerate that baseline only for an
 intentional, reviewed public API change. After a release, compatibility may also
 be checked against an explicitly generated release baseline.
 
+The canonical go-geom adapter is `github.com/faustbrian/go-geo/adapters/geom`,
+whose declared package identifier is `geogeom`. The released
+`adapter/gogeom` path remains a supported deprecated facade for the longer of
+180 days after successor public availability and two subsequently published
+stable minor releases.
+
+Existing call sites may migrate without renaming their qualifier:
+
+```go
+import gogeom "github.com/faustbrian/go-geo/adapters/geom"
+```
+
+New code should use the canonical identifier:
+
+```go
+import geogeom "github.com/faustbrian/go-geo/adapters/geom"
+```
+
+The migration preserves all non-collection behavior. It also replaces the
+released `GeometryCollection.FlatCoords` panic: valid bounded collections now
+convert, while nil children, cycles, depth above 32, and geometry-limit
+violations return typed errors before recursive upstream work. Cumulative
+point limits are checked after bounded layout and SRID validation but before
+marshal. For a multi-fault collection, nil, geometry-count, depth, and cycle
+failures precede layout and SRID validation.
+
 ## Migration checklist
 
 1. Identify whether existing pairs are latitude/longitude or
@@ -28,6 +54,8 @@ be checked against an explicitly generated release baseline.
 7. Register both PostGIS geometry and geography OIDs when both are queried.
 8. Compare old/new production fixtures at poles, boundaries, holes, and the
    antimeridian before rollout.
+9. Replace `adapter/gogeom` imports with `adapters/geom`; no call-site rename is
+   needed when the import keeps the `gogeom` alias.
 
 ## Troubleshooting
 

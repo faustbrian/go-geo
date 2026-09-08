@@ -10,7 +10,7 @@ Each directory is an independent `main` package:
 | GeoJSON, EWKT, and EWKB | `go run ./examples/codecs` |
 | GeoJSON Feature IDs and owned properties | `go run ./examples/feature` |
 | Geohash cells and neighbors | `go run ./examples/geohash` |
-| geom adapter isolation | `go run ./examples/adapter` |
+| Canonical `adapters/geom` conversion and ownership | `go run ./examples/adapter` |
 | Safe PostGIS SQL fragments | `go run ./examples/postgis` |
 | Live pgx codec registration and scan | `POSTGIS_DSN=... go run ./examples/pgx` |
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-09-04",
+  "reviewed_at": "2026-09-08",
   "review_interval_days": 90,
   "authorities": [
     {
@@ -37,8 +37,8 @@
     {
       "id": "ogc-sfa-releases",
       "kind": "releases",
-      "url": "https://www.ogc.org/standard/sfa/",
-      "sha256": "db39e5e3459b87fbdd890b59b5ed4210eb9015ee7b55b575e88a30e00caa0134",
+      "url": "https://www.ogc.org/standards/sfa/",
+      "sha256": "bd515ae8eae361887276964e103a701b4ea26c2918f3c2930592d7ba6bcb7eb6",
       "specifications": [
         "OGC Simple Features for SQL 1.1",
         "OGC Simple Feature Access Part 1: Common Architecture 1.2.1"

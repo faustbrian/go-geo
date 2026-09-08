@@ -1,4 +1,6 @@
-package gogeom_test
+//lint:file-ignore SA1019 This parity fuzz target intentionally exercises the deprecated compatibility facade.
+
+package geogeom_test
 
 import (
 	"encoding/binary"
@@ -10,7 +12,7 @@ import (
 	"github.com/twpayne/go-geom"
 
 	geo "github.com/faustbrian/go-geo"
-	"github.com/faustbrian/go-geo/adapter/gogeom"
+	legacy "github.com/faustbrian/go-geo/adapter/gogeom" //nolint:staticcheck // Required parity fuzzing exercises the deprecated facade.
 	geogeom "github.com/faustbrian/go-geo/adapters/geom"
 )
 
@@ -32,13 +34,13 @@ func FuzzFromGoGeom(f *testing.F) {
 		line := geom.NewLineStringFlat(geom.XY, flat).SetSRID(4326)
 		collection := fuzzCollection(selector, line)
 		limits := fuzzAdapterLimits()
-		legacyConverted, legacyErr := gogeom.FromGoGeom(collection, limits)
+		legacyConverted, legacyErr := legacy.FromGoGeom(collection, limits) //nolint:staticcheck // Required parity fuzzing exercises the deprecated facade.
 		converted, err := geogeom.FromGoGeom(collection, limits)
 		assertFuzzParity(t, legacyConverted, converted, legacyErr, err)
 		if err != nil {
 			return
 		}
-		legacyValue, legacyToErr := gogeom.ToGoGeom(legacyConverted)
+		legacyValue, legacyToErr := legacy.ToGoGeom(legacyConverted) //nolint:staticcheck // Required parity fuzzing exercises the deprecated facade.
 		value, toErr := geogeom.ToGoGeom(converted)
 		assertFuzzErrors(t, legacyToErr, toErr)
 		if toErr == nil && !reflect.DeepEqual(legacyValue, value) {

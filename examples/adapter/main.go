@@ -6,16 +6,16 @@ import (
 	"github.com/twpayne/go-geom"
 
 	geo "github.com/faustbrian/go-geo"
-	"github.com/faustbrian/go-geo/adapter/gogeom"
+	geogeom "github.com/faustbrian/go-geo/adapters/geom"
 )
 
 func main() {
 	external := geom.NewPointFlat(geom.XY, []float64{24.9384, 60.1699}).SetSRID(4326)
-	owned, err := gogeom.FromGoGeom(external, geo.DefaultLimits())
+	owned, err := geogeom.FromGoGeom(external, geo.DefaultLimits())
 	if err != nil {
 		panic(err)
 	}
-	roundTrip, err := gogeom.ToGoGeom(owned)
+	roundTrip, err := geogeom.ToGoGeom(owned)
 	if err != nil {
 		panic(err)
 	}

@@ -28,6 +28,18 @@
     },
     {
       "module_directory": ".",
+      "directory": "adapters/geom",
+      "name": "geogeom",
+      "import_path": "github.com/faustbrian/go-geo/adapters/geom",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
       "directory": "examples/adapter",
       "name": "main",
       "import_path": "github.com/faustbrian/go-geo/examples/adapter",
