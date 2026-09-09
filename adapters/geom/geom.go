@@ -7,15 +7,17 @@
 // coordinates are never transformed. Both directions return newly owned
 // values and retain no mutable aliases to their inputs.
 //
-// FromGoGeom resolves geo.Limits, checks collection structure before outer
-// layout and SRID, then checks descendant coordinates before canonical EWKB
-// conversion. Collection depth is always capped at 32 even when a larger limit
-// is requested. Nil children and cycles return *geo.EncodingError; point,
-// geometry, and depth bounds return *geo.TopologyError; layout and SRID return
-// *geo.UnsupportedError and *geo.CRSError. Marshal failures retain their cause,
-// encoded-byte failures have no cause, and downstream decode errors are
-// returned unchanged. These checks normalize the former GeometryCollection
-// FlatCoords panic without recovering unrelated caller-induced panics.
+// FromGoGeom resolves geo.Limits, validates flat-coordinate offsets and shape
+// counts before marshal, checks collection structure before outer layout and
+// SRID, then checks descendant coordinates before canonical EWKB conversion.
+// Collection depth is always capped at 32 even when a larger limit is
+// requested. Nil children, cycles, and malformed offsets return
+// *geo.EncodingError; point, ring, geometry, and depth bounds return
+// *geo.TopologyError; layout and SRID return *geo.UnsupportedError and
+// *geo.CRSError. Marshal failures retain their cause, encoded-byte failures
+// have no cause, and downstream decode errors are returned unchanged. These
+// checks normalize upstream collection and offset panics without recovering
+// unrelated caller-induced panics.
 //
 // Migrate from adapter/gogeom either by importing this package with its
 // declared geogeom identifier or by retaining an explicit gogeom import alias.
@@ -50,8 +52,8 @@ func ToGoGeom(geometry geo.Geometry) (geom.T, error) {
 
 // FromGoGeom converts a caller-owned geom value through canonical
 // little-endian EWKB. The returned geo geometry is immutable and newly owned.
-// Limits bound point and encoded-byte work; zero limits resolve to package
-// defaults.
+// Limits bound point, ring, geometry, and encoded-byte work; zero limits
+// resolve to package defaults.
 func FromGoGeom(value geom.T, limits geo.Limits) (geo.Geometry, error) {
 	if nilGeometry(value) {
 		return nil, adapterError("cannot convert nil geometry", nil)
@@ -69,28 +71,12 @@ func FromGoGeom(value geom.T, limits geo.Limits) (geo.Geometry, error) {
 		}
 		return convert(value, limits)
 	}
-	if value.Layout() != geom.XY {
-		return nil, &geo.UnsupportedError{
-			Operation: "geom conversion",
-			Reason:    "only the two-dimensional XY layout is supported",
-		}
-	}
-	if value.SRID() <= 0 {
-		return nil, &geo.CRSError{
-			SRID:    int32(value.SRID()),
-			Problem: "geom conversion requires a positive SRID",
-		}
+	if err := validateLayoutAndSRID(value); err != nil {
+		return nil, err
 	}
 	limits = geo.ResolveLimits(limits)
-	coordinates := value.FlatCoords()
-	if len(coordinates)%2 != 0 {
-		return nil, adapterError("geom has malformed XY coordinates", nil)
-	}
-	if len(coordinates)/2 > limits.MaxPoints {
-		return nil, &geo.TopologyError{
-			Geometry: "geom",
-			Problem:  "point limit exceeded",
-		}
+	if _, err := validateFlatGeometry(value, limits); err != nil {
+		return nil, err
 	}
 
 	return convert(value, limits)
@@ -193,17 +179,121 @@ func validateCollectionCoordinates(collection *geom.GeometryCollection, limits g
 			stack = append(stack, collectionFrame{collection: childCollection})
 			continue
 		}
-		coordinates := child.FlatCoords()
-		if len(coordinates)%2 != 0 {
-			return adapterError("geom has malformed XY coordinates", nil)
+		points, err := validateFlatGeometry(child, limits)
+		if err != nil {
+			return err
 		}
-		points := len(coordinates) / 2
 		if points > limits.MaxPoints || pointCount > limits.MaxPoints-points {
 			return topologyError("point limit exceeded")
 		}
 		pointCount += points
 	}
 	return nil
+}
+
+func validateFlatGeometry(value geom.T, limits geo.Limits) (int, error) {
+	coordinates := value.FlatCoords()
+	if len(coordinates)%2 != 0 {
+		return 0, adapterError("geom has malformed XY coordinates", nil)
+	}
+	points := len(coordinates) / 2
+	if points > limits.MaxPoints {
+		return 0, topologyError("point limit exceeded")
+	}
+
+	switch geometry := value.(type) {
+	case *geom.Polygon:
+		if len(geometry.Ends()) > limits.MaxRings {
+			return 0, topologyError("ring limit exceeded")
+		}
+		if !validEnds(geometry.Ends(), len(coordinates), geometry.Stride()) {
+			return 0, adapterError("geom has malformed offsets", nil)
+		}
+	case *geom.MultiPoint:
+		if len(geometry.Ends()) > limits.MaxGeometries {
+			return 0, topologyError("geometry limit exceeded")
+		}
+		if !validPointEnds(geometry.Ends(), len(coordinates), geometry.Stride()) {
+			return 0, adapterError("geom has malformed offsets", nil)
+		}
+	case *geom.MultiLineString:
+		if len(geometry.Ends()) > limits.MaxGeometries {
+			return 0, topologyError("geometry limit exceeded")
+		}
+		if !validEnds(geometry.Ends(), len(coordinates), geometry.Stride()) {
+			return 0, adapterError("geom has malformed offsets", nil)
+		}
+	case *geom.MultiPolygon:
+		if len(geometry.Endss()) > limits.MaxGeometries {
+			return 0, topologyError("geometry limit exceeded")
+		}
+		for _, ends := range geometry.Endss() {
+			if len(ends) > limits.MaxRings {
+				return 0, topologyError("ring limit exceeded")
+			}
+		}
+		if !validPolygonEnds(geometry.Endss(), len(coordinates), geometry.Stride()) {
+			return 0, adapterError("geom has malformed offsets", nil)
+		}
+	}
+
+	return points, nil
+}
+
+func validEnds(ends []int, coordinateCount, stride int) bool {
+	previous := 0
+	for _, end := range ends {
+		if end < previous {
+			return false
+		}
+		if end > coordinateCount {
+			return false
+		}
+		if end%stride != 0 {
+			return false
+		}
+		previous = end
+	}
+	return previous == coordinateCount
+}
+
+func validPointEnds(ends []int, coordinateCount, stride int) bool {
+	previous := 0
+	for _, end := range ends {
+		if end < previous {
+			return false
+		}
+		if end > coordinateCount {
+			return false
+		}
+		if end%stride != 0 {
+			return false
+		}
+		if end-previous > stride {
+			return false
+		}
+		previous = end
+	}
+	return previous == coordinateCount
+}
+
+func validPolygonEnds(endss [][]int, coordinateCount, stride int) bool {
+	previous := 0
+	for _, ends := range endss {
+		for _, end := range ends {
+			if end < previous {
+				return false
+			}
+			if end > coordinateCount {
+				return false
+			}
+			if end%stride != 0 {
+				return false
+			}
+			previous = end
+		}
+	}
+	return previous == coordinateCount
 }
 
 func topologyError(problem string) error {

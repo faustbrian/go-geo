@@ -17,12 +17,14 @@ typed-error, cause, limit, and ownership behavior. Conversion is synchronous,
 stateless, and safe for concurrent calls when the caller does not mutate the
 same upstream value during a call. Only XY layouts with positive SRIDs are
 accepted, no CRS transformation occurs, and results retain no mutable aliases.
+Flat aggregate offsets, rings, and members are bounded before marshal.
 Collection structure is bounded before recursive upstream work; cumulative
-points are checked after layout and SRID validation but before marshal.
+points are checked after layout and SRID validation.
 
-The legacy path remains supported for the longer of 180 days after the
-successor becomes publicly available and two subsequently published stable
-minor releases. See the [migration and compatibility guide](../../docs/adoption.md),
+The legacy path will not be removed before v2.0.0 and remains supported for the
+longer of 180 days after the successor becomes publicly available and two
+subsequently published stable minor releases. See the
+[migration and compatibility guide](../../docs/adoption.md),
 [interoperability contract](../../docs/interoperability.md),
 [verification evidence](../../docs/verification.md), and
 [API reference](https://pkg.go.dev/github.com/faustbrian/go-geo/adapter/gogeom).
