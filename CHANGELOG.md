@@ -6,7 +6,7 @@ versioning.
 
 ## Unreleased
 
-## 1.1.0 - Unreleased
+## 1.1.0 - 2026-09-09
 
 ### Added
 
@@ -39,9 +39,9 @@ versioning.
   mutable page presentation changes and confirming the v13.102 WKT definition
   and release status are unchanged.
 
-- Refresh the OGC SFA release-catalogue URL and authority-body pin after
-  reviewing site presentation changes and confirming SFA 1.2.1 / OGC
-  06-103r4 remains the current normative source.
+- Replace the dynamically rendered OGC SFA catalogue monitor with its stable
+  official API representation after confirming SFA 1.2.1 / OGC 06-103r4
+  remains the current normative source.
 
 - Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
   shared workflow so local and hosted gates enforce specification governance
