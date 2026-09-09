@@ -64,8 +64,8 @@ represent them; empty aggregate geometries are supported.
 
 ## Fuzz corpora and hostile-input boundaries
 
-Every fuzz target has inline seeds plus a checked-in corpus under its package's
-`testdata/fuzz` directory:
+Every fuzz target has bounded inline seeds; maintained targets also retain
+discovered regression inputs under their package's `testdata/fuzz` directory:
 
 | Target | Corpus emphasis |
 | --- | --- |

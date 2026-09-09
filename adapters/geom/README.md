@@ -20,11 +20,12 @@ positive SRIDs are accepted; coordinates are never transformed. Returned
 values are newly owned and retain no mutable input aliases.
 
 `FromGoGeom` resolves zero `geo.Limits`, rejects nil values, and preserves root
-Geo error types, categories, fields, messages, and safe causes. Collections
-receive a bounded iterative structural pass before recursive layout work, with
-an effective depth ceiling of 32, followed by cumulative point validation
-before marshal. Valid direct, nested, mixed-kind, and empty collections retain
-order, geometry type, coordinates, and SRID.
+Geo error types, categories, fields, messages, and safe causes. Every flat
+aggregate validates offsets plus ring and member counts before marshal.
+Collections receive a bounded iterative structural pass before recursive
+layout work, with an effective depth ceiling of 32, followed by cumulative
+point validation. Valid direct, nested, mixed-kind, and empty collections
+retain order, geometry type, coordinates, and SRID.
 
 See the [migration and compatibility guide](../../docs/adoption.md),
 [interoperability contract](../../docs/interoperability.md),

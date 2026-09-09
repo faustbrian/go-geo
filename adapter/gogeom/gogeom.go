@@ -14,8 +14,9 @@
 // gogeom alias, or by adopting that package's declared geogeom identifier.
 //
 // Deprecated: use github.com/faustbrian/go-geo/adapters/geom. This compatibility
-// path remains supported for the longer of 180 days after the successor's
-// public availability and two subsequently published stable minor releases.
+// path will not be removed before v2.0.0 and remains supported for the longer
+// of 180 days after the successor's public availability and two subsequently
+// published stable minor releases.
 package gogeom
 
 import (

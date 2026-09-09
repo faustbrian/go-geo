@@ -16,9 +16,9 @@ be checked against an explicitly generated release baseline.
 
 The canonical go-geom adapter is `github.com/faustbrian/go-geo/adapters/geom`,
 whose declared package identifier is `geogeom`. The released
-`adapter/gogeom` path remains a supported deprecated facade for the longer of
-180 days after successor public availability and two subsequently published
-stable minor releases.
+`adapter/gogeom` path will not be removed before v2.0.0 and remains a supported
+deprecated facade for the longer of 180 days after successor public
+availability and two subsequently published stable minor releases.
 
 Existing call sites may migrate without renaming their qualifier:
 

@@ -276,6 +276,192 @@ func TestNumericAdversariesPreserveRootValidation(t *testing.T) {
 	}
 }
 
+func TestFromGoGeomRejectsPolygonRingLimitBeforeMarshal(t *testing.T) {
+	t.Parallel()
+
+	limits := geo.DefaultLimits()
+	limits.MaxRings = 1
+	limits.MaxEncodedBytes = 1
+	value := geom.NewPolygonFlat(geom.XY, nil, []int{0, 0}).SetSRID(4326)
+
+	_, err := geogeom.FromGoGeom(value, limits)
+	var typed *geo.TopologyError
+	if !errors.As(err, &typed) || typed.Geometry != "geom" || typed.Problem != "ring limit exceeded" {
+		t.Fatalf("error = %#v, want geom topology error %q", err, "ring limit exceeded")
+	}
+}
+
+func TestFromGoGeomRejectsAggregateGeometryLimitsBeforeMarshal(t *testing.T) {
+	t.Parallel()
+
+	values := map[string]geom.T{
+		"multi point": geom.NewMultiPointFlat(
+			geom.XY,
+			nil,
+			geom.NewMultiPointFlatOptionWithEnds([]int{0, 0}),
+		).SetSRID(4326),
+		"multi line string": geom.NewMultiLineStringFlat(geom.XY, nil, []int{0, 0}).SetSRID(4326),
+		"multi polygon":     geom.NewMultiPolygonFlat(geom.XY, nil, [][]int{nil, nil}).SetSRID(4326),
+	}
+	for name, value := range values {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			limits := geo.DefaultLimits()
+			limits.MaxGeometries = 1
+			limits.MaxEncodedBytes = 1
+
+			_, err := geogeom.FromGoGeom(value, limits)
+			var typed *geo.TopologyError
+			if !errors.As(err, &typed) || typed.Geometry != "geom" || typed.Problem != "geometry limit exceeded" {
+				t.Fatalf("error = %#v, want geom topology error %q", err, "geometry limit exceeded")
+			}
+		})
+	}
+}
+
+func TestFromGoGeomRejectsMultiPolygonRingLimitBeforeMarshal(t *testing.T) {
+	t.Parallel()
+
+	limits := geo.DefaultLimits()
+	limits.MaxRings = 1
+	limits.MaxEncodedBytes = 1
+	value := geom.NewMultiPolygonFlat(geom.XY, nil, [][]int{{0, 0}}).SetSRID(4326)
+
+	_, err := geogeom.FromGoGeom(value, limits)
+	var typed *geo.TopologyError
+	if !errors.As(err, &typed) || typed.Geometry != "geom" || typed.Problem != "ring limit exceeded" {
+		t.Fatalf("error = %#v, want geom topology error %q", err, "ring limit exceeded")
+	}
+}
+
+func TestFromGoGeomRejectsMalformedAggregateOffsetsBeforeMarshal(t *testing.T) {
+	values := map[string]geom.T{
+		"polygon decreasing": geom.NewPolygonFlat(
+			geom.XY, []float64{0, 0}, []int{2, 0},
+		).SetSRID(4326),
+		"polygon beyond":     geom.NewPolygonFlat(geom.XY, nil, []int{2}).SetSRID(4326),
+		"polygon misaligned": geom.NewPolygonFlat(geom.XY, []float64{0, 0}, []int{1}).SetSRID(4326),
+		"polygon incomplete": geom.NewPolygonFlat(geom.XY, []float64{0, 0}, []int{0}).SetSRID(4326),
+		"multi point decreasing": geom.NewMultiPointFlat(
+			geom.XY, []float64{0, 0}, geom.NewMultiPointFlatOptionWithEnds([]int{2, 0}),
+		).SetSRID(4326),
+		"multi point beyond": geom.NewMultiPointFlat(
+			geom.XY, nil, geom.NewMultiPointFlatOptionWithEnds([]int{2}),
+		).SetSRID(4326),
+		"multi point misaligned": geom.NewMultiPointFlat(
+			geom.XY, []float64{0, 0}, geom.NewMultiPointFlatOptionWithEnds([]int{1}),
+		).SetSRID(4326),
+		"multi point wide": geom.NewMultiPointFlat(
+			geom.XY, []float64{0, 0, 1, 1}, geom.NewMultiPointFlatOptionWithEnds([]int{4}),
+		).SetSRID(4326),
+		"multi point incomplete": geom.NewMultiPointFlat(
+			geom.XY, []float64{0, 0}, geom.NewMultiPointFlatOptionWithEnds([]int{0}),
+		).SetSRID(4326),
+		"multi line decreasing": geom.NewMultiLineStringFlat(
+			geom.XY, []float64{0, 0}, []int{2, 0},
+		).SetSRID(4326),
+		"multi line beyond":     geom.NewMultiLineStringFlat(geom.XY, nil, []int{2}).SetSRID(4326),
+		"multi line misaligned": geom.NewMultiLineStringFlat(geom.XY, []float64{0, 0}, []int{1}).SetSRID(4326),
+		"multi line incomplete": geom.NewMultiLineStringFlat(geom.XY, []float64{0, 0}, []int{0}).SetSRID(4326),
+		"multi polygon decreasing": geom.NewMultiPolygonFlat(
+			geom.XY, []float64{0, 0}, [][]int{{2, 0}},
+		).SetSRID(4326),
+		"multi polygon beyond":     geom.NewMultiPolygonFlat(geom.XY, nil, [][]int{{2}}).SetSRID(4326),
+		"multi polygon misaligned": geom.NewMultiPolygonFlat(geom.XY, []float64{0, 0}, [][]int{{1}}).SetSRID(4326),
+		"multi polygon incomplete": geom.NewMultiPolygonFlat(geom.XY, []float64{0, 0}, [][]int{{0}}).SetSRID(4326),
+	}
+	limits := geo.DefaultLimits()
+	limits.MaxEncodedBytes = 1
+	for name, value := range values {
+		t.Run(name, func(t *testing.T) {
+			_, err := geogeom.FromGoGeom(value, limits)
+			assertEncodingError(t, err, "geom has malformed offsets", nil)
+		})
+	}
+}
+
+func TestFromGoGeomPreservesEmptyAggregateMemberSemantics(t *testing.T) {
+	t.Parallel()
+
+	values := map[string]geom.T{
+		"polygon empty ring": geom.NewPolygonFlat(
+			geom.XY, []float64{0, 0, 2, 0, 2, 2, 0, 0}, []int{8, 8},
+		).SetSRID(4326),
+		"multi point empty member": geom.NewMultiPointFlat(
+			geom.XY, []float64{0, 0}, geom.NewMultiPointFlatOptionWithEnds([]int{0, 2}),
+		).SetSRID(4326),
+		"multi line empty member": geom.NewMultiLineStringFlat(
+			geom.XY, []float64{0, 0, 1, 1}, []int{0, 4},
+		).SetSRID(4326),
+		"multi polygon empty ring": geom.NewMultiPolygonFlat(
+			geom.XY, []float64{0, 0, 2, 0, 2, 2, 0, 0}, [][]int{{8, 8}},
+		).SetSRID(4326),
+		"multi polygon empty member": geom.NewMultiPolygonFlat(
+			geom.XY, []float64{0, 0, 2, 0, 2, 2, 0, 0}, [][]int{nil, {8}},
+		).SetSRID(4326),
+	}
+	for name, value := range values {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			_, err := geogeom.FromGoGeom(value, geo.DefaultLimits())
+			var typed *geo.EncodingError
+			if !errors.As(err, &typed) || typed.Cause == nil {
+				t.Fatalf("error = %#v, want downstream encoding error with cause", err)
+			}
+		})
+	}
+}
+
+func TestFromGoGeomAcceptsExactShapeLimitsBeforeMarshal(t *testing.T) {
+	t.Parallel()
+
+	values := map[string]struct {
+		value         geom.T
+		maxRings      int
+		maxGeometries int
+	}{
+		"polygon": {
+			value: geom.NewPolygonFlat(
+				geom.XY, []float64{0, 0, 2, 0, 2, 2, 0, 0}, []int{8},
+			).SetSRID(4326),
+			maxRings: 1,
+		},
+		"multi point": {
+			value:         geom.NewMultiPointFlat(geom.XY, []float64{0, 0, 1, 1}).SetSRID(4326),
+			maxGeometries: 2,
+		},
+		"multi line string": {
+			value: geom.NewMultiLineStringFlat(
+				geom.XY, []float64{0, 0, 1, 1}, []int{4},
+			).SetSRID(4326),
+			maxGeometries: 1,
+		},
+		"multi polygon": {
+			value: geom.NewMultiPolygonFlat(
+				geom.XY, []float64{0, 0, 2, 0, 2, 2, 0, 0}, [][]int{{8}},
+			).SetSRID(4326),
+			maxRings:      1,
+			maxGeometries: 1,
+		},
+	}
+	for name, test := range values {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			limits := geo.DefaultLimits()
+			if test.maxRings != 0 {
+				limits.MaxRings = test.maxRings
+			}
+			if test.maxGeometries != 0 {
+				limits.MaxGeometries = test.maxGeometries
+			}
+			if _, err := geogeom.FromGoGeom(test.value, limits); err != nil {
+				t.Fatalf("FromGoGeom(): %v", err)
+			}
+		})
+	}
+}
+
 func assertEncodingError(t *testing.T, err error, problem string, cause error) {
 	t.Helper()
 

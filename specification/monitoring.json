@@ -37,8 +37,8 @@
     {
       "id": "ogc-sfa-releases",
       "kind": "releases",
-      "url": "https://www.ogc.org/standards/sfa/",
-      "sha256": "bd515ae8eae361887276964e103a701b4ea26c2918f3c2930592d7ba6bcb7eb6",
+      "url": "https://www.ogc.org/wp-json/wp/v2/standards/18157",
+      "sha256": "685071e1543536cc7c8dd9acfe7d101690df52f214665434e46c0ca22efa5551",
       "specifications": [
         "OGC Simple Features for SQL 1.1",
         "OGC Simple Feature Access Part 1: Common Architecture 1.2.1"

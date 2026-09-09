@@ -6,7 +6,7 @@ versioning.
 
 ## Unreleased
 
-## 1.1.0 - Unreleased
+## 1.1.0 - 2026-09-09
 
 ### Added
 
@@ -23,25 +23,29 @@ versioning.
   validation but before marshal. Structural failures precede layout and SRID
   errors on multi-fault collections.
 
+- Reject excessive polygon rings, multi-geometry members, and malformed flat
+  coordinate offsets before upstream marshaling can allocate or panic.
+
 ### Migration
 
 - Replace `github.com/faustbrian/go-geo/adapter/gogeom` with
   `github.com/faustbrian/go-geo/adapters/geom`. Existing qualifiers can remain
-  `gogeom` through an import alias; new code should use `geogeom`.
+  `gogeom` through an import alias; new code should use `geogeom`. The legacy
+  facade will not be removed before v2.0.0.
 
 ### Changed
 
-- Adopt the checksum-verified `go-library-tools` v1.4.0 CLI and immutable W14
-  reusable workflow, including strict online specification validation, without
-  changing the geospatial API or runtime behavior.
+- Adopt the checksum-verified `go-library-tools` v1.6.2 CLI and immutable
+  reusable workflow, including reliable zero-mutant and specification gates,
+  without changing the geospatial API or runtime behavior.
 
 - Refresh the EPSG:4326 and release-history authority-body pins after reviewing
   mutable page presentation changes and confirming the v13.102 WKT definition
   and release status are unchanged.
 
-- Refresh the OGC SFA release-catalogue URL and authority-body pin after
-  reviewing site presentation changes and confirming SFA 1.2.1 / OGC
-  06-103r4 remains the current normative source.
+- Replace the dynamically rendered OGC SFA catalogue monitor with its stable
+  official API representation after confirming SFA 1.2.1 / OGC 06-103r4
+  remains the current normative source.
 
 - Adopt the checksum-verified `go-library-tools` v1.2.0 CLI and immutable
   shared workflow so local and hosted gates enforce specification governance
