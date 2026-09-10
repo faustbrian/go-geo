@@ -45,8 +45,9 @@ shown here.
 ## Safety And Concurrency
 
 - Shared mutable state MUST have one documented synchronization owner.
-- Goroutines MUST have explicit lifetime, cancellation, shutdown, and leak
-  tests. Fire-and-forget goroutines are forbidden.
+- Goroutines MUST have explicit lifetime, cancellation, and shutdown.
+  Goroutine lifecycle changes MUST include targeted leak tests.
+  Fire-and-forget goroutines are forbidden.
 - Channels MUST have documented ownership and closure rules.
 - Locks MUST NOT be held across caller callbacks, network IO, blocking channel
   operations, or unbounded work.
@@ -110,8 +111,10 @@ prohibited as routine requirements.
 ## Required Commands
 
 - `make inventory` validates repository and package manifests.
-- `make check` runs the exact contract for every repository module.
-- `make ci` runs the complete repository contract.
+- `make check` runs the selected repository contract when its gates match the
+  change's assurance tier.
+- `make ci` runs the configured repository contract; it MUST NOT be treated as
+  a universal requirement for unrelated or unchanged modules.
 - Pull requests MUST run fast checks selected for the affected assurance tier.
   Aggregate, scheduled, and release workflows MUST own broad or expensive
   checks that are not required for the pull request's material risks.
