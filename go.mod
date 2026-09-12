@@ -1,6 +1,6 @@
 module github.com/faustbrian/go-geo
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/jackc/pgx/v5 v5.10.0

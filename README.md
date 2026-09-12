@@ -7,7 +7,7 @@
 [![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-geo.svg)](https://pkg.go.dev/github.com/faustbrian/go-geo)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-geo?sort=semver)](https://github.com/faustbrian/go-geo/releases)
-[![Go](https://img.shields.io/badge/go-1.26.6-00ADD8?logo=go)](https://go.dev/)
+[![Go](https://img.shields.io/badge/go-1.27.0-00ADD8?logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Reliable, bounded geospatial primitives for Go services.
@@ -24,7 +24,7 @@ addresses, transform CRSs, or replace PostGIS.
 go get github.com/faustbrian/go-geo
 ```
 
-The module requires Go 1.26.6 or newer.
+The module requires Go 1.27.0 or newer.
 
 ## Coordinate-order quickstart
 
