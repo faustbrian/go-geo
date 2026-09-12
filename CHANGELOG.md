@@ -6,6 +6,10 @@ versioning.
 
 ## Unreleased
 
+### Changed
+
+- Raise the minimum supported and tested Go toolchain to 1.27.0.
+
 ## 1.1.0 - 2026-09-09
 
 ### Added
