@@ -19,6 +19,7 @@
 
 ## Operations and security
 
+- [Security model and residual risks](security.md)
 - [Security and performance](security-and-performance.md)
 
 ## Contributing

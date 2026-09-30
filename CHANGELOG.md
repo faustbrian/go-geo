@@ -10,6 +10,21 @@ versioning.
 
 - Raise the minimum supported and tested Go toolchain to 1.27.0.
 
+### Fixed
+
+- Reject oversized binary and hexadecimal PostGIS values before copying or
+  decoding them, so scanner and pgx codec paths honor `MaxEncodedBytes`.
+- Reject oversized GeoJSON and root geometry collections before processing
+  their children or allocating the owned collection.
+- Keep GeoJSON property names and unsupported GeoJSON/WKT type names out of
+  rendered error messages while retaining stable error categories.
+
+### Security
+
+- Fix resource-limit ordering and caller-controlled diagnostic text in spatial
+  paths present in v1.0.0 through v1.1.1. Upgrade to v1.1.2 when published and
+  set limits and database deadlines appropriate to each request path.
+
 ## 1.1.0 - 2026-09-09
 
 ### Added

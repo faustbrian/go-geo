@@ -63,6 +63,25 @@ func TestDepthCountdownRejectsExhaustedAndNegativeLimits(t *testing.T) {
 	}
 }
 
+func TestUnsupportedTypeDiagnosticsDoNotEchoCallerInput(t *testing.T) {
+	t.Parallel()
+
+	for _, input := range []string{"privatemarker (0 0)", "privatemarker EMPTY"} {
+		_, err := Unmarshal([]byte(input), geo.WGS84(), geo.DefaultLimits())
+		if !errors.Is(err, geo.ErrUnsupported) || !strings.Contains(err.Error(), "unsupported geometry type") {
+			t.Fatalf("unsupported type classification = %v", err)
+		}
+		if strings.Contains(err.Error(), "PRIVATEMARKER") {
+			t.Fatal("unsupported type diagnostic retained caller input")
+		}
+	}
+
+	_, err := Unmarshal([]byte("POINT EMPTY"), geo.WGS84(), geo.DefaultLimits())
+	if !errors.Is(err, geo.ErrUnsupported) || !strings.Contains(err.Error(), "EMPTY has no root-model representation") {
+		t.Fatalf("recognized EMPTY classification = %v", err)
+	}
+}
+
 func TestParserResourceLimitsReportTheOwningBoundary(t *testing.T) {
 	t.Parallel()
 

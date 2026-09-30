@@ -56,6 +56,11 @@ err = value.Scan(source)
 geometry, valid := value.Geometry()
 ```
 
+`NewValue` retains the limits for later scans; its input geometry has already
+passed the root model's construction limits. Binary scans cap source bytes and
+hexadecimal scans cap decoded bytes before conversion or allocation. A hex
+wire value can therefore contain twice the decoded-byte limit, plus `\x`.
+
 ## pgx registration
 
 PostGIS OIDs are installation-specific. Query and register both spatial types

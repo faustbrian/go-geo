@@ -1,5 +1,8 @@
 # Security, limits, and performance
 
+The [versioned security model](security.md) identifies trust boundaries,
+package controls, residual-risk owners, and review conditions.
+
 ## Untrusted input
 
 Never decode untrusted bytes with application-inappropriate limits. A zero

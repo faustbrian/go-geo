@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -89,6 +90,69 @@ func TestCodecPlanningAndDatabaseSQLDecoding(t *testing.T) {
 	decoded, err = codec.DecodeDatabaseSQLValue(nil, 0, pgtype.TextFormatCode, []byte("abc"))
 	if err != nil || decoded != "abc" {
 		t.Fatalf("DecodeDatabaseSQLValue(text) = %v, %v", decoded, err)
+	}
+}
+
+func TestScanRejectsOversizedWireValuesBeforeConversion(t *testing.T) {
+	t.Parallel()
+
+	limits := geo.Limits{MaxEncodedBytes: 2}
+	codec := Codec{Limits: limits}
+	oversizedBinary := []byte{1, 2, 3}
+	oversizedHex := []byte("zzzzzz")
+	checkLimit := func(name string, err error) {
+		t.Helper()
+		if !errors.Is(err, geo.ErrEncoding) ||
+			!strings.Contains(err.Error(), "encoded byte limit exceeded") {
+			t.Fatalf("%s error = %v, want encoded byte limit", name, err)
+		}
+	}
+
+	var value Value
+	value.limits = limits
+	checkLimit("Value.Scan(binary)", value.Scan(oversizedBinary))
+	checkLimit("Value.Scan(binary string)", value.Scan(string(oversizedBinary)))
+	checkLimit("Value.Scan(hex bytes)", value.Scan(oversizedHex))
+	checkLimit("Value.Scan(hex string)", value.Scan(string(oversizedHex)))
+	checkLimit("Value.Scan(prefixed hex string)", value.Scan(`\x`+string(oversizedHex)))
+	checkLimit("pgx binary Scan", codec.PlanScan(nil, 0, pgtype.BinaryFormatCode, &value).Scan(oversizedBinary, &value))
+	checkLimit("pgx text Scan", codec.PlanScan(nil, 0, pgtype.TextFormatCode, &value).Scan(oversizedHex, &value))
+	_, err := codec.DecodeValue(nil, 0, pgtype.TextFormatCode, oversizedHex)
+	checkLimit("Codec.DecodeValue", err)
+	_, err = codec.DecodeDatabaseSQLValue(nil, 0, pgtype.BinaryFormatCode, oversizedBinary)
+	checkLimit("Codec.DecodeDatabaseSQLValue(binary)", err)
+	_, err = codec.DecodeDatabaseSQLValue(nil, 0, pgtype.TextFormatCode, oversizedHex)
+	checkLimit("Codec.DecodeDatabaseSQLValue(text)", err)
+	_, err = codec.DecodeDatabaseSQLValue(nil, 0, pgtype.TextFormatCode, append([]byte(`\x`), oversizedHex...))
+	checkLimit("Codec.DecodeDatabaseSQLValue(prefixed text)", err)
+}
+
+func TestScanAcceptsExactDecodedByteLimit(t *testing.T) {
+	t.Parallel()
+
+	point := testPoint(t, 1, 2, geo.WGS84())
+	value, err := NewValue(point, geo.DefaultLimits())
+	if err != nil {
+		t.Fatalf("NewValue() error = %v", err)
+	}
+	encodedValue, err := value.Value()
+	if err != nil {
+		t.Fatalf("Value() error = %v", err)
+	}
+	binaryValue := encodedValue.([]byte)
+	limits := geo.Limits{MaxEncodedBytes: int64(len(binaryValue))}
+	codec := Codec{Limits: limits}
+	var scanned Value
+	scanned.limits = limits
+	if err := scanned.Scan(string(binaryValue)); err != nil {
+		t.Fatalf("Scan(binary string at limit) error = %v", err)
+	}
+	textValue := append([]byte(`\x`), []byte(hex.EncodeToString(binaryValue))...)
+	if err := scanned.Scan(string(textValue)); err != nil {
+		t.Fatalf("Scan(hex string at decoded limit) error = %v", err)
+	}
+	if _, err := codec.DecodeDatabaseSQLValue(nil, 0, pgtype.TextFormatCode, textValue); err != nil {
+		t.Fatalf("DecodeDatabaseSQLValue(hex at decoded limit) error = %v", err)
 	}
 }
 
