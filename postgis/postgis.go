@@ -404,9 +404,7 @@ func scanStringLimit(source string, limits geo.Limits) error {
 		}
 		return nil
 	}
-	if strings.HasPrefix(source, `\x`) {
-		source = source[2:]
-	}
+	source = strings.TrimPrefix(source, `\x`)
 	return decodedHexLimit(len(source), limits)
 }
 
