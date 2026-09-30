@@ -147,9 +147,22 @@ func TestScanAcceptsExactDecodedByteLimit(t *testing.T) {
 	if err := scanned.Scan(string(binaryValue)); err != nil {
 		t.Fatalf("Scan(binary string at limit) error = %v", err)
 	}
+	if geometry, valid := scanned.Geometry(); !valid || !geo.EqualGeometry(geometry, point) {
+		t.Fatal("Scan(binary string at limit) did not retain the geometry")
+	}
 	textValue := append([]byte(`\x`), []byte(hex.EncodeToString(binaryValue))...)
 	if err := scanned.Scan(string(textValue)); err != nil {
 		t.Fatalf("Scan(hex string at decoded limit) error = %v", err)
+	}
+	if geometry, valid := scanned.Geometry(); !valid || !geo.EqualGeometry(geometry, point) {
+		t.Fatal("Scan(hex string at decoded limit) did not retain the geometry")
+	}
+	decodedBinary, err := codec.DecodeDatabaseSQLValue(nil, 0, pgtype.BinaryFormatCode, binaryValue)
+	if err != nil {
+		t.Fatalf("DecodeDatabaseSQLValue(binary at limit) error = %v", err)
+	}
+	if !bytes.Equal(decodedBinary.([]byte), binaryValue) {
+		t.Fatalf("DecodeDatabaseSQLValue(binary at limit) = %v, %v", decodedBinary, err)
 	}
 	if _, err := codec.DecodeDatabaseSQLValue(nil, 0, pgtype.TextFormatCode, textValue); err != nil {
 		t.Fatalf("DecodeDatabaseSQLValue(hex at decoded limit) error = %v", err)
