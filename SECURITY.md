@@ -5,8 +5,9 @@ feature for this repository. Do not open a public issue until a fix and release
 are available. Include affected versions, a minimal reproducer, impact, and any
 suggested resource limit or mitigation.
 
-Supported versions will be listed here after the first release. Until then,
-security fixes target the latest commit on `main`.
+Security fixes target the maintained stable v1 stream on `main`. Published
+versions are immutable; consult the release list and advisories for the latest
+fix and precise affected versions.
 
 The principal risk areas are hostile codec input, aggregate geometry exhaustion,
 integer overflow, parser panics, SQL-fragment misuse, numerical edge cases, and
@@ -28,3 +29,5 @@ corpora, race tests, exact coverage, API compatibility, allocation budgets,
 benchmarks, `govulncheck`, and live tests against every supported PostGIS line.
 The numerical, interoperability, fuzz, benchmark, and dependency evidence is
 indexed in [the verification record](docs/verification.md).
+The [versioned security model](docs/security.md) records trust boundaries,
+controls, residual-risk owners, and review conditions.

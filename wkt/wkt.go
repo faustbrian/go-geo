@@ -150,7 +150,7 @@ func (parser *parser) geometry(remainingDepth int) (geo.Geometry, error) {
 		}
 		return parser.wrap(geo.NewGeometryCollectionWithLimits(geometries, parser.crs, parser.limits))
 	default:
-		return nil, parser.failure("unsupported geometry type "+kind, geo.ErrUnsupported)
+		return nil, parser.failure("unsupported geometry type", geo.ErrUnsupported)
 	}
 }
 
@@ -165,9 +165,9 @@ func (parser *parser) empty(kind string) (geo.Geometry, error) {
 	case geo.TypeGeometryCollection:
 		return parser.wrap(geo.NewGeometryCollectionWithLimits(nil, parser.crs, parser.limits))
 	case geo.TypePoint, geo.TypeLineString, geo.TypePolygon:
-		return nil, parser.failure(kind+" EMPTY has no root-model representation", geo.ErrUnsupported)
+		return nil, parser.failure("EMPTY has no root-model representation", geo.ErrUnsupported)
 	default:
-		return nil, parser.failure("unsupported geometry type "+kind, geo.ErrUnsupported)
+		return nil, parser.failure("unsupported geometry type", geo.ErrUnsupported)
 	}
 }
 

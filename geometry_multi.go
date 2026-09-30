@@ -288,6 +288,9 @@ func NewGeometryCollectionWithLimits(
 	if err := validateDeclaredCRS("geometry collection", crs); err != nil {
 		return GeometryCollection{}, err
 	}
+	if len(geometries) >= limits.MaxGeometries {
+		return GeometryCollection{}, limitError("geometry collection", "geometry")
+	}
 	owned := make([]Geometry, len(geometries))
 	points, count, depth := 0, 1, 1
 	for index, geometry := range geometries {

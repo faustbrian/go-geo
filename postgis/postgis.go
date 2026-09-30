@@ -74,6 +74,9 @@ func (value *Value) Scan(source any) error {
 	case []byte:
 		data = source
 	case string:
+		if err := scanStringLimit(source, value.limits); err != nil {
+			return err
+		}
 		data = []byte(source)
 	default:
 		return encodingError(fmt.Sprintf("unsupported scan source %T", source), nil)
@@ -149,6 +152,9 @@ func (codec Codec) DecodeDatabaseSQLValue(
 	}
 	if !codec.FormatSupported(format) {
 		return nil, encodingError("unsupported PostGIS format", nil)
+	}
+	if err := wireLimit(source, format, codec.Limits); err != nil {
+		return nil, err
 	}
 	if format == pgtype.BinaryFormatCode {
 		return append([]byte(nil), source...), nil
@@ -236,8 +242,12 @@ func (plan scanPlan) Scan(source []byte, target any) error {
 	}
 	data := source
 	if plan.format == pgtype.TextFormatCode {
-		decoded := make([]byte, hex.DecodedLen(len(trimHexPrefix(source))))
-		count, err := hex.Decode(decoded, trimHexPrefix(source))
+		encoded := trimHexPrefix(source)
+		if err := decodedHexLimit(len(encoded), plan.limits); err != nil {
+			return err
+		}
+		decoded := make([]byte, hex.DecodedLen(len(encoded)))
+		count, err := hex.Decode(decoded, encoded)
 		if err != nil {
 			return encodingError("invalid hexadecimal EWKB", err)
 		}
@@ -359,6 +369,9 @@ func decode(data []byte, limits geo.Limits) (geo.Geometry, error) {
 		return wkb.UnmarshalEWKB(data, limits)
 	}
 	encoded := trimHexPrefix(data)
+	if err := decodedHexLimit(len(encoded), limits); err != nil {
+		return nil, err
+	}
 	decoded := make([]byte, hex.DecodedLen(len(encoded)))
 	count, err := hex.Decode(decoded, encoded)
 	if err != nil {
@@ -372,6 +385,34 @@ func trimHexPrefix(data []byte) []byte {
 		return data[2:]
 	}
 	return data
+}
+
+func wireLimit(source []byte, format int16, limits geo.Limits) error {
+	if format == pgtype.TextFormatCode {
+		return decodedHexLimit(len(trimHexPrefix(source)), limits)
+	}
+	if int64(len(source)) > geo.ResolveLimits(limits).MaxEncodedBytes {
+		return encodingError("encoded byte limit exceeded", nil)
+	}
+	return nil
+}
+
+func scanStringLimit(source string, limits geo.Limits) error {
+	if len(source) > 0 && (source[0] == 0 || source[0] == 1) {
+		if int64(len(source)) > geo.ResolveLimits(limits).MaxEncodedBytes {
+			return encodingError("encoded byte limit exceeded", nil)
+		}
+		return nil
+	}
+	source = strings.TrimPrefix(source, `\x`)
+	return decodedHexLimit(len(source), limits)
+}
+
+func decodedHexLimit(encodedLength int, limits geo.Limits) error {
+	if int64(hex.DecodedLen(encodedLength)) > geo.ResolveLimits(limits).MaxEncodedBytes {
+		return encodingError("encoded byte limit exceeded", nil)
+	}
+	return nil
 }
 
 func validIdentifier(identifier string) bool {

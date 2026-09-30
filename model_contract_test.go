@@ -465,6 +465,13 @@ func TestGeometryConstructorLimitAndEqualityBranches(t *testing.T) {
 	); !errors.Is(err, ErrTopology) {
 		t.Fatalf("collection geometry limit error = %v, want ErrTopology", err)
 	}
+	if _, err := NewGeometryCollectionWithLimits(
+		[]Geometry{nil},
+		WGS84(),
+		Limits{MaxGeometries: 1},
+	); !errors.Is(err, ErrTopology) || err.Error() != "geo: invalid geometry collection topology: geometry limit exceeded" {
+		t.Fatalf("collection size must be rejected before cloning: %v", err)
+	}
 	if _, err := NewGeometryCollection([]Geometry{nil}, WGS84()); !errors.Is(err, ErrTopology) {
 		t.Fatalf("collection nil error = %v, want ErrTopology", err)
 	}
@@ -607,6 +614,13 @@ func TestGeometryConstructorsAcceptExactLimitsAndAccumulateEveryChild(t *testing
 	)
 	if err != nil {
 		t.Fatalf("inner collection at exact limits: %v", err)
+	}
+	if _, err := NewGeometryCollectionWithLimits(
+		[]Geometry{inner},
+		WGS84(),
+		Limits{MaxPoints: 1, MaxGeometries: 2, MaxCollectionDepth: 3},
+	); !errors.Is(err, ErrTopology) || err.Error() != "geo: invalid geometry collection topology: geometry limit exceeded" {
+		t.Fatalf("nested collection count must include descendants: %v", err)
 	}
 	outer, err := NewGeometryCollectionWithLimits(
 		[]Geometry{inner},

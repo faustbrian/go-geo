@@ -36,9 +36,9 @@ func NewFeature(
 	if err := validateID(id); err != nil {
 		return Feature{}, err
 	}
-	for name, value := range properties {
+	for _, value := range properties {
 		if !json.Valid(value) {
-			return Feature{}, encodingError("property "+name+" is not valid JSON", nil)
+			return Feature{}, encodingError("property is not valid JSON", nil)
 		}
 	}
 
@@ -250,6 +250,9 @@ func unmarshalGeometry(
 		}
 		return wrapGeometry(geo.NewMultiPolygonWithLimits(polygons, crs, limits))
 	case geo.TypeGeometryCollection:
+		if len(wire.Geometries) >= limits.MaxGeometries {
+			return nil, encodingError("geometry limit exceeded", geo.ErrTopology)
+		}
 		geometries := make([]geo.Geometry, len(wire.Geometries))
 		for index, rawGeometry := range wire.Geometries {
 			geometry, err := unmarshalGeometry(rawGeometry, crs, limits, remainingDepth-1)
@@ -260,7 +263,7 @@ func unmarshalGeometry(
 		}
 		return wrapGeometry(geo.NewGeometryCollectionWithLimits(geometries, crs, limits))
 	default:
-		return nil, encodingError("unsupported geometry type "+wire.Type, geo.ErrUnsupported)
+		return nil, encodingError("unsupported geometry type", geo.ErrUnsupported)
 	}
 }
 
