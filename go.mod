@@ -6,7 +6,7 @@ require (
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/peterstace/simplefeatures v0.59.0
 	github.com/pymaxion/geographiclib-go/v2 v2.1.2
-	github.com/twpayne/go-geom v1.6.1
+	github.com/twpayne/go-geom v1.7.0
 )
 
 require (
