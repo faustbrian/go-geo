@@ -6,6 +6,15 @@ versioning.
 
 ## Unreleased
 
+## 1.1.3 - 2026-10-05
+
+### Changed
+
+- Update the go-geom adapter dependency to v1.7.0 and the PostGIS PGX
+  dependency to v5.11.0 without changing owned geometry, wire, or scan contracts.
+
+## 1.1.2 - 2026-09-30
+
 ### Changed
 
 - Raise the minimum supported and tested Go toolchain to 1.27.0.
@@ -22,7 +31,7 @@ versioning.
 ### Security
 
 - Fix resource-limit ordering and caller-controlled diagnostic text in spatial
-  paths present in v1.0.0 through v1.1.1. Upgrade to v1.1.2 when published and
+  paths present in v1.0.0 through v1.1.1. Upgrade to v1.1.2 or later and
   set limits and database deadlines appropriate to each request path.
 
 ## 1.1.0 - 2026-09-09

@@ -3,15 +3,16 @@
 Direct dependencies are deliberately isolated behind package-owned contracts.
 This inventory must be reviewed whenever `go.mod` changes.
 
-The 2026-07-16 audit resolved each selected version as the latest version from
-the Go module proxy.
+The selected versions below reflect the 2026-10-05 maintenance review.
+The earlier 2026-07-16 audit resolved then-selected versions from the Go module
+proxy; this inventory does not claim every dependency is currently latest.
 
-| Module | Selected/latest | Purpose | License | Linked unsafe/cgo | Material caveat |
+| Module | Selected | Purpose | License | Linked unsafe/cgo | Material caveat |
 | --- | --- | --- | --- | --- | --- |
 | `github.com/pymaxion/geographiclib-go/v2` | v2.1.2 | WGS84 Karney geodesics behind `geodesy.Model` | MIT | none | Multiple shortest geodesics exist for special antipodal/symmetric cases; the upstream terrestrial distance claim is below 15 nm, but package tolerances are intentionally looser. |
 | `github.com/peterstace/simplefeatures` | v0.59.0 | Planar polygon topology validation behind immutable geometry | MIT | `geom` imports `unsafe`; no cgo is linked | Validation is planar, not geodesic. Native-endian initialization and zero-copy WKB helpers use `unsafe` even though this package calls only `NewPolygonXY(...).Validate()`. |
-| `github.com/twpayne/go-geom` | v1.6.1 | Optional adapter and independent WKB differential | BSD-2-Clause | none in linked packages | The adapter deliberately accepts only XY layouts with positive SRIDs. |
-| `github.com/jackc/pgx/v5` | v5.10.0 | Optional PostGIS wire codec and live integration | MIT | none in linked packages | PostGIS OIDs are installation-specific and must be registered per connection/type map. |
+| `github.com/twpayne/go-geom` | v1.7.0 | Optional adapter and independent WKB differential | BSD-2-Clause | none in linked packages | The adapter deliberately accepts only XY layouts with positive SRIDs. |
+| `github.com/jackc/pgx/v5` | v5.11.0 | Optional PostGIS wire codec and live integration | MIT | none in linked packages | PostGIS OIDs are installation-specific and must be registered per connection/type map. |
 
 The authoritative license text remains in each dependency module and its
 source repository. `go.sum` pins downloaded content; CI runs module-integrity
