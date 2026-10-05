@@ -46,5 +46,5 @@ database, and request contexts.
 
 The PostGIS pre-limit allocation, GeoJSON collection pre-limit work, and
 direct type and property-name echo in rendered diagnostics fixed in the
-v1.1.2 candidate are not accepted residual risks. See the changelog and
+released v1.1.2 are not accepted residual risks. See the changelog and
 focused regression tests.
