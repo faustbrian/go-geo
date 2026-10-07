@@ -27,6 +27,80 @@ jobs:
       public_dependencies: true
       release_dry_run: ${{ inputs.release_dry_run || false }}
 
+  vulnerability-diagnostic:
+    name: Failed vulnerability tool diagnostics
+    if: always() && needs.ci.result == 'failure' && github.event_name == 'pull_request'
+    needs: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact producer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: producer
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.0'
+          cache: false
+      - name: Report only public advisory IDs and fixed failure categories
+        working-directory: producer
+        env:
+          GOTOOLCHAIN: local
+          GOWORK: off
+          GOMAXPROCS: '2'
+          GOFLAGS: -p=1 -modcacherw
+          GOPROXY: https://proxy.golang.org
+          GOSUMDB: sum.golang.org
+          GOPRIVATE: ''
+          GONOPROXY: ''
+          GONOSUMDB: ''
+          GOENV: off
+        run: |
+          set -euo pipefail
+          task="$(mktemp -d "${RUNNER_TEMP}/geo-vulnerability-diagnostic.XXXXXX")"
+          trap 'chmod -R u+w "${task}"; find "${task}" -depth -delete' EXIT
+          mkdir -p "${task}/build" "${task}/modules" "${task}/tmp"
+          export GOCACHE="${task}/build" GOMODCACHE="${task}/modules" GOTMPDIR="${task}/tmp"
+          run_capped() {
+            stage="$1"
+            shift
+            set +e
+            "$@" 2> >({ head -c 1048576 >"${task}/err"; cat >/dev/null; }) \
+              | { head -c 1048576 >"${task}/out"; cat >/dev/null; }
+            status="${PIPESTATUS[0]}"
+            wait
+            set -e
+            printf 'vulnerability-%s-exit %s\n' "${stage}" "${status}"
+            awk '/^Vulnerability #[0-9]+: GO-[0-9][0-9][0-9][0-9]-[0-9]+$/ { if (++count <= 32) print "public-advisory " $3 }' "${task}/out"
+            if [[ "${status}" != 0 ]]; then
+              awk '
+                /panic:/ { panic=1 }
+                /unsupported|requires go|cannot compile|loading packages/ { compatibility=1 }
+                /sum.golang.org|proxy.golang.org|dial tcp|TLS handshake|timeout|connection reset/ { transport=1 }
+                END {
+                  if (panic) print "failure-category tool-panic"
+                  if (compatibility) print "failure-category tool-or-package-compatibility"
+                  if (transport) print "failure-category public-dependency-transport"
+                  if (!panic && !compatibility && !transport) print "failure-category unclassified"
+                }' "${task}/err"
+            fi
+            return "${status}"
+          }
+          run_capped install env GOBIN="${task}/bin" go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
+          run_capped scan "${task}/bin/govulncheck" ./...
+      - name: Remove task-owned producer checkout
+        if: always()
+        run: |
+          set -euo pipefail
+          target="${GITHUB_WORKSPACE}/producer"
+          if [[ -d "${target}" ]]; then
+            find "${target}" -depth -delete
+          fi
+
   required:
     name: Required
     if: always()
