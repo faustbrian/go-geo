@@ -1,3 +1,5 @@
+//lint:file-ignore SA1019 These SRID contract tests intentionally exercise the retained deprecated compatibility facade.
+
 package geogeom_test
 
 import (
@@ -9,7 +11,7 @@ import (
 	"github.com/twpayne/go-geom"
 
 	geo "github.com/faustbrian/go-geo"
-	legacy "github.com/faustbrian/go-geo/adapter/gogeom"
+	legacy "github.com/faustbrian/go-geo/adapter/gogeom" //nolint:staticcheck // SA1019: verify the retained facade's supported public contract.
 	geogeom "github.com/faustbrian/go-geo/adapters/geom"
 )
 
