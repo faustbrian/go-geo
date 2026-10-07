@@ -106,6 +106,12 @@ filtering, or unsupported GIS operations. `geodesy.Nearest` and
 
 ## Verification
 
+The gate commands below require a source-built `golib` from the immutable
+`tooling_sha` in [CI](.github/workflows/ci.yml). Set `GOLIB` to that binary's
+path when it is not on `PATH`. The `tool_version` in `.golib.yaml` is retained
+release-install metadata, not the current compatible CLI baseline: published
+v1.6.2 and v1.8.5 CLIs do not support the diagnostic coverage configuration.
+
 ```sh
 make inventory
 make cohesion

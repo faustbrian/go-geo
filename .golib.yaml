@@ -1,4 +1,6 @@
 schema_version: 1
+# Retained release-install metadata, not the current compatible CLI baseline.
+# Gate commands require the source-built CLI selected by ci.yml tooling_sha.
 tool_version: v1.6.2
 tool_checksums_sha256: 2a740a44fee468f042b4a66e086fc01a02d8d28877c9b1866e278102665b35ad
 manifest:
@@ -6,6 +8,10 @@ manifest:
   packages: packages.json
 evidence:
   root: ".verification"
+coverage:
+  modules:
+  - module: "."
+    mode: evidence
 mutation:
   root: ".verification/mutation"
   imports:
