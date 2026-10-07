@@ -3,6 +3,7 @@ package wkb
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"strings"
@@ -148,6 +149,38 @@ func TestCountUsesTheExactRemainingByteBudget(t *testing.T) {
 		}
 		if !errors.Is(err, test.wantError) {
 			t.Fatalf("%s error = %v", test.name, err)
+		}
+	}
+}
+
+func TestCountRejectsNegativeResourceLimits(t *testing.T) {
+	for _, raw := range []uint32{0, 1} {
+		t.Run(fmt.Sprint(raw), func(t *testing.T) {
+			data := binary.LittleEndian.AppendUint32(nil, raw)
+			data = append(data, make([]byte, 5)...)
+			parser := binaryParser{data: data, limits: geo.DefaultLimits()}
+			count, err := parser.count(binary.LittleEndian, -1, 5, "item")
+			if count != 0 || !errors.Is(err, geo.ErrTopology) {
+				t.Fatalf("negative resource limit for count %d: count=%d error=%v", raw, count, err)
+			}
+		})
+	}
+}
+
+func TestAppendCountPreservesWireBoundaries(t *testing.T) {
+	for _, order := range []binary.AppendByteOrder{binary.LittleEndian, binary.BigEndian} {
+		for _, count := range []int64{0, 2, math.MaxUint32} {
+			encoded, err := appendCount([]byte{7}, order, count)
+			if err != nil || len(encoded) != 5 || encoded[0] != 7 || int64(order.(binary.ByteOrder).Uint32(encoded[1:])) != count {
+				t.Fatalf("wire count %d: bytes=%v error=%v", count, encoded, err)
+			}
+		}
+		for _, count := range []int64{-1, math.MaxUint32 + 1} {
+			encoded, err := appendCount([]byte{7}, order, count)
+			var typed *geo.EncodingError
+			if encoded != nil || !errors.As(err, &typed) || !errors.Is(err, geo.ErrTopology) {
+				t.Fatalf("unrepresentable wire count %d: bytes=%v error=%v", count, encoded, err)
+			}
 		}
 	}
 }

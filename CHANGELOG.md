@@ -10,6 +10,11 @@ versioning.
 
 - Upgrade the indirect `golang.org/x/text` dependency to v0.41.0,
   fixing GO-2026-6629 in the pgx dependency graph.
+- Reject go-geom SRIDs outside the signed 32-bit CRS domain before
+  upstream encoding can change their identity. Both canonical and legacy
+  adapters preserve valid positive SRIDs and existing validation order.
+- Reject negative WKB resource limits before count-driven parsing and
+  unrepresentable WKB/EWKB counts before narrowing to their wire fields.
 
 ## 1.1.3 - 2026-10-05
 

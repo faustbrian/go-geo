@@ -35,7 +35,7 @@ func Marshal(geometry geo.Geometry, order binary.ByteOrder) ([]byte, error) {
 		return nil, err
 	}
 	result := make([]byte, 0, initialCapacity(owned, false))
-	return appendGeometry(result, owned, order.(binary.AppendByteOrder), false), nil
+	return appendGeometry(result, owned, order.(binary.AppendByteOrder), false)
 }
 
 // MarshalEWKB encodes geometry as PostGIS EWKB with an SRID on the top-level
@@ -49,7 +49,7 @@ func MarshalEWKB(geometry geo.Geometry, order binary.ByteOrder) ([]byte, error) 
 		return nil, err
 	}
 	result := make([]byte, 0, initialCapacity(owned, true))
-	return appendGeometry(result, owned, order.(binary.AppendByteOrder), true), nil
+	return appendGeometry(result, owned, order.(binary.AppendByteOrder), true)
 }
 
 // Unmarshal decodes bounded OGC WKB using caller-supplied CRS metadata.
@@ -302,11 +302,11 @@ func (parser *binaryParser) count(
 	if err != nil {
 		return 0, err
 	}
-	if uint64(raw) > uint64(limit) {
+	if int64(raw) > int64(limit) {
 		return 0, parser.failure(resource+" limit exceeded", geo.ErrTopology)
 	}
 	remaining := len(parser.data[parser.position:])
-	if uint64(raw) > uint64(remaining/minimumBytes) {
+	if int64(raw) > int64(remaining/minimumBytes) {
 		return 0, parser.failure(resource+" count exceeds remaining bytes", io.ErrUnexpectedEOF)
 	}
 	return int(raw), nil
@@ -374,7 +374,7 @@ func appendGeometry(
 	geometry geo.Geometry,
 	order binary.AppendByteOrder,
 	includeSRID bool,
-) []byte {
+) ([]byte, error) {
 	result = appendByteOrder(result, order)
 	kind := geometryCode(geometry.Type())
 	rawType := kind
@@ -383,6 +383,7 @@ func appendGeometry(
 	}
 	result = appendUint32(result, order, rawType)
 	if includeSRID {
+		// #nosec G115 -- owned CRS stores a nonnegative signed 32-bit SRID.
 		result = appendUint32(result, order, uint32(geometry.CRS().SRID()))
 	}
 
@@ -390,68 +391,125 @@ func appendGeometry(
 	case geo.Point:
 		result = appendCoordinate(result, order, value.Coordinate())
 	case geo.LineString:
-		result = appendLineString(result, order, value)
+		return appendLineString(result, order, value)
 	case geo.Polygon:
-		result = appendPolygon(result, order, value)
+		return appendPolygon(result, order, value)
 	case geo.MultiPoint:
-		result = appendUint32(result, order, uint32(value.Len()))
+		var err error
+		result, err = appendCount(result, order, int64(value.Len()))
+		if err != nil {
+			return nil, err
+		}
 		for index := range value.Len() {
 			coordinate, _ := value.At(index)
 			point, _ := geo.NewPoint(coordinate)
-			result = appendGeometry(result, point, order, false)
+			result, err = appendGeometry(result, point, order, false)
+			if err != nil {
+				return nil, err
+			}
 		}
 	case geo.MultiLineString:
-		result = appendUint32(result, order, uint32(value.Len()))
+		var err error
+		result, err = appendCount(result, order, int64(value.Len()))
+		if err != nil {
+			return nil, err
+		}
 		for _, line := range value.Lines() {
-			result = appendGeometry(result, line, order, false)
+			result, err = appendGeometry(result, line, order, false)
+			if err != nil {
+				return nil, err
+			}
 		}
 	case geo.MultiPolygon:
-		result = appendUint32(result, order, uint32(value.Len()))
+		var err error
+		result, err = appendCount(result, order, int64(value.Len()))
+		if err != nil {
+			return nil, err
+		}
 		for _, polygon := range value.Polygons() {
-			result = appendGeometry(result, polygon, order, false)
+			result, err = appendGeometry(result, polygon, order, false)
+			if err != nil {
+				return nil, err
+			}
 		}
 	case geo.GeometryCollection:
-		result = appendUint32(result, order, uint32(value.Len()))
+		var err error
+		result, err = appendCount(result, order, int64(value.Len()))
+		if err != nil {
+			return nil, err
+		}
 		for _, child := range value.Geometries() {
-			result = appendGeometry(result, child, order, false)
+			result, err = appendGeometry(result, child, order, false)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
-	return result
+	return result, nil
 }
 
 func appendLineString(
 	result []byte,
 	order binary.AppendByteOrder,
 	line geo.LineString,
-) []byte {
-	result = appendUint32(result, order, uint32(line.Len()))
+) ([]byte, error) {
+	var err error
+	result, err = appendCount(result, order, int64(line.Len()))
+	if err != nil {
+		return nil, err
+	}
 	for index := range line.Len() {
 		coordinate, _ := line.At(index)
 		result = appendCoordinate(result, order, coordinate)
 	}
-	return result
+	return result, nil
 }
 
-func appendPolygon(result []byte, order binary.AppendByteOrder, polygon geo.Polygon) []byte {
+func appendPolygon(result []byte, order binary.AppendByteOrder, polygon geo.Polygon) ([]byte, error) {
 	holes := polygon.Holes()
-	result = appendUint32(result, order, uint32(1+len(holes)))
-	result = appendCoordinates(result, order, polygon.Exterior())
-	for _, hole := range holes {
-		result = appendCoordinates(result, order, hole)
+	if int64(len(holes)) >= math.MaxUint32 {
+		return nil, encodingError("polygon ring count exceeds WKB range", geo.ErrTopology)
 	}
-	return result
+	var err error
+	result, err = appendCount(result, order, int64(len(holes))+1)
+	if err != nil {
+		return nil, err
+	}
+	result, err = appendCoordinates(result, order, polygon.Exterior())
+	if err != nil {
+		return nil, err
+	}
+	for _, hole := range holes {
+		result, err = appendCoordinates(result, order, hole)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
 }
 
 func appendCoordinates(
 	result []byte,
 	order binary.AppendByteOrder,
 	coordinates []geo.Coordinate,
-) []byte {
-	result = appendUint32(result, order, uint32(len(coordinates)))
+) ([]byte, error) {
+	var err error
+	result, err = appendCount(result, order, int64(len(coordinates)))
+	if err != nil {
+		return nil, err
+	}
 	for _, coordinate := range coordinates {
 		result = appendCoordinate(result, order, coordinate)
 	}
-	return result
+	return result, nil
+}
+
+func appendCount(result []byte, order binary.AppendByteOrder, count int64) ([]byte, error) {
+	if count < 0 || count > math.MaxUint32 {
+		return nil, encodingError("geometry count exceeds WKB range", geo.ErrTopology)
+	}
+	// #nosec G115 -- the preceding guard admits only the uint32 wire domain.
+	return appendUint32(result, order, uint32(count)), nil
 }
 
 func appendCoordinate(
@@ -487,6 +545,9 @@ func initialCapacity(geometry geo.Geometry, includeSRID bool) int {
 	case geo.Point:
 		return header + 16
 	case geo.LineString:
+		if value.Len() > (math.MaxInt-header-4)/16 {
+			return 0
+		}
 		return header + 4 + value.Len()*16
 	}
 	return 0

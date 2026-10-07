@@ -405,7 +405,7 @@ func (parser *parser) identifier() string {
 	parser.space()
 	start := parser.position
 	end := bytes.IndexFunc(parser.data[start:], func(value rune) bool {
-		return value != rune(byte(value)) || !asciiLetter(byte(value))
+		return (value < 'A' || value > 'Z') && (value < 'a' || value > 'z')
 	})
 	if end == -1 {
 		parser.position = len(parser.data)

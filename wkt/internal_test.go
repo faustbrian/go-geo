@@ -192,6 +192,8 @@ func TestLexicalBoundariesAreASCIIAndDelimiterAware(t *testing.T) {
 		{input: "a`", want: "a"},
 		{input: "z{", want: "z"},
 		{input: "ŁPOINT", want: ""},
+		{input: "éPOINT", want: ""},
+		{input: "\xffPOINT", want: ""},
 	} {
 		parser := parser{data: []byte(test.input)}
 		if got := parser.identifier(); got != test.want {

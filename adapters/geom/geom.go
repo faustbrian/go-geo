@@ -9,7 +9,8 @@
 //
 // FromGoGeom resolves geo.Limits, validates flat-coordinate offsets and shape
 // counts before marshal, checks collection structure before outer layout and
-// SRID, then checks descendant coordinates before canonical EWKB conversion.
+// SRID, then checks descendant SRID ranges and coordinates before canonical
+// EWKB conversion. A zero descendant SRID retains parent inheritance.
 // Collection depth is always capped at 32 even when a larger limit is
 // requested. Nil children, cycles, and malformed offsets return
 // *geo.EncodingError; point, ring, geometry, and depth bounds return
@@ -25,6 +26,7 @@ package geogeom
 
 import (
 	"encoding/binary"
+	"math"
 	"reflect"
 
 	"github.com/twpayne/go-geom"
@@ -100,11 +102,23 @@ func validateLayoutAndSRID(value geom.T) error {
 			Reason:    "only the two-dimensional XY layout is supported",
 		}
 	}
-	if value.SRID() <= 0 {
+	srid := value.SRID()
+	if err := validateSRIDRange(srid); err != nil {
+		return err
+	}
+	if srid <= 0 {
 		return &geo.CRSError{
-			SRID:    int32(value.SRID()),
+			// #nosec G115 -- the preceding guard proves the signed 32-bit range.
+			SRID:    int32(srid),
 			Problem: "geom conversion requires a positive SRID",
 		}
+	}
+	return nil
+}
+
+func validateSRIDRange(srid int) error {
+	if srid < math.MinInt32 || srid > math.MaxInt32 {
+		return &geo.CRSError{Problem: "geom conversion SRID exceeds the signed 32-bit range"}
 	}
 	return nil
 }
@@ -175,6 +189,9 @@ func validateCollectionCoordinates(collection *geom.GeometryCollection, limits g
 
 		child := frame.collection.Geom(frame.next)
 		frame.next++
+		if err := validateSRIDRange(child.SRID()); err != nil {
+			return err
+		}
 		if childCollection, ok := child.(*geom.GeometryCollection); ok {
 			stack = append(stack, collectionFrame{collection: childCollection})
 			continue
