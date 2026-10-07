@@ -467,11 +467,8 @@ func appendLineString(
 
 func appendPolygon(result []byte, order binary.AppendByteOrder, polygon geo.Polygon) ([]byte, error) {
 	holes := polygon.Holes()
-	if int64(len(holes)) >= math.MaxUint32 {
-		return nil, encodingError("polygon ring count exceeds WKB range", geo.ErrTopology)
-	}
 	var err error
-	result, err = appendCount(result, order, int64(len(holes))+1)
+	result, err = appendPolygonRingCount(result, order, int64(len(holes)))
 	if err != nil {
 		return nil, err
 	}
@@ -486,6 +483,15 @@ func appendPolygon(result []byte, order binary.AppendByteOrder, polygon geo.Poly
 		}
 	}
 	return result, nil
+}
+
+// appendPolygonRingCount admits the nonnegative hole length before adding
+// the exterior ring, preserving the polygon-specific wire-range diagnostic.
+func appendPolygonRingCount(result []byte, order binary.AppendByteOrder, holes int64) ([]byte, error) {
+	if holes >= math.MaxUint32 {
+		return nil, encodingError("polygon ring count exceeds WKB range", geo.ErrTopology)
+	}
+	return appendCount(result, order, holes+1)
 }
 
 func appendCoordinates(
