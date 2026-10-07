@@ -2,6 +2,7 @@ package geogeom_test
 
 import (
 	"errors"
+	"math"
 	"strconv"
 	"testing"
 
@@ -42,6 +43,27 @@ func TestFromGoGeomPreservesRepresentableSRID(t *testing.T) {
 		converted, err := geogeom.FromGoGeom(point, geo.DefaultLimits())
 		if err != nil || converted.CRS().SRID() != int32(srid) {
 			t.Fatalf("FromGoGeom SRID %d: result=%v error=%v", srid, converted, err)
+		}
+	}
+}
+
+func TestFromGoGeomPreservesRepresentableNonpositiveSRIDError(t *testing.T) {
+	for _, srid := range []int{math.MinInt32, -1, 0} {
+		for name, convert := range map[string]func(geom.T, geo.Limits) (geo.Geometry, error){
+			"canonical": geogeom.FromGoGeom,
+			"legacy":    legacy.FromGoGeom, //nolint:staticcheck // Verify the retained facade's public contract.
+		} {
+			t.Run(name+"/"+strconv.Itoa(srid), func(t *testing.T) {
+				point := geom.NewPointFlat(geom.XY, []float64{24, 60}).SetSRID(srid)
+				converted, err := convert(point, geo.DefaultLimits())
+				var typed *geo.CRSError
+				if converted != nil || !errors.As(err, &typed) {
+					t.Fatalf("nonpositive SRID: result=%v error=%v, want nil and CRSError", converted, err)
+				}
+				if typed.SRID != int32(srid) || typed.Problem != "geom conversion requires a positive SRID" {
+					t.Fatalf("representable nonpositive SRID error changed: %+v", typed)
+				}
+			})
 		}
 	}
 }
