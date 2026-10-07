@@ -6,6 +6,11 @@ versioning.
 
 ## Unreleased
 
+### Security
+
+- Upgrade the indirect `golang.org/x/text` dependency to v0.41.0,
+  fixing GO-2026-6629 in the pgx dependency graph.
+
 ## 1.1.3 - 2026-10-05
 
 ### Changed

@@ -3,7 +3,7 @@
 Direct dependencies are deliberately isolated behind package-owned contracts.
 This inventory must be reviewed whenever `go.mod` changes.
 
-The selected versions below reflect the 2026-10-05 maintenance review.
+The direct versions below reflect the 2026-10-05 maintenance review.
 The earlier 2026-07-16 audit resolved then-selected versions from the Go module
 proxy; this inventory does not claim every dependency is currently latest.
 
@@ -13,6 +13,12 @@ proxy; this inventory does not claim every dependency is currently latest.
 | `github.com/peterstace/simplefeatures` | v0.59.0 | Planar polygon topology validation behind immutable geometry | MIT | `geom` imports `unsafe`; no cgo is linked | Validation is planar, not geodesic. Native-endian initialization and zero-copy WKB helpers use `unsafe` even though this package calls only `NewPolygonXY(...).Validate()`. |
 | `github.com/twpayne/go-geom` | v1.7.0 | Optional adapter and independent WKB differential | BSD-2-Clause | none in linked packages | The adapter deliberately accepts only XY layouts with positive SRIDs. |
 | `github.com/jackc/pgx/v5` | v5.11.0 | Optional PostGIS wire codec and live integration | MIT | none in linked packages | PostGIS OIDs are installation-specific and must be registered per connection/type map. |
+
+The pgx graph selects indirect `golang.org/x/text` v0.41.0 (BSD-3-Clause).
+The 2026-10-07 update replaces affected v0.40.0 for
+[GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629) without changing the
+owned geometry or PostGIS API. The dated scan below predates this advisory;
+current release qualification must use the updated vulnerability database.
 
 The authoritative license text remains in each dependency module and its
 source repository. `go.sum` pins downloaded content; CI runs module-integrity
