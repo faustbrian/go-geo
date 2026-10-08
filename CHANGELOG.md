@@ -6,6 +6,15 @@ versioning.
 
 ## Unreleased
 
+## 1.1.5 - 2026-10-08
+
+### Changed
+
+- Refresh the immutable shared CI workflow reference while retaining its
+  existing workflow content, verifier selection, and gate policy.
+
+## 1.1.4 - 2026-10-07
+
 ### Security
 
 - Upgrade the indirect `golang.org/x/text` dependency to v0.41.0,
