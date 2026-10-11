@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/faustbrian/go-geo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/faustbrian/go-geo/actions/workflows/ci.yml)
 [![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-geo/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-100%25_required-blue)](CONTRIBUTING.md#verification)
-[![Mutation](https://img.shields.io/badge/mutation-100%25_required-blue)](CONTRIBUTING.md#verification)
+[![Coverage](https://img.shields.io/badge/coverage-diagnostic-blue)](CONTRIBUTING.md#verification)
+[![Mutation](https://img.shields.io/badge/mutation-local_or_scheduled-blue)](CONTRIBUTING.md#verification)
 [![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-geo.svg)](https://pkg.go.dev/github.com/faustbrian/go-geo)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-geo?sort=semver)](https://github.com/faustbrian/go-geo/releases)
@@ -106,23 +106,21 @@ filtering, or unsupported GIS operations. `geodesy.Nearest` and
 
 ## Verification
 
-The gate commands below require a source-built `golib` from the immutable
-`tooling_sha` in [CI](.github/workflows/ci.yml). Set `GOLIB` to that binary's
-path when it is not on `PATH`. The `tool_version` in `.golib.yaml` is retained
-release-install metadata, not the current compatible CLI baseline: published
-v1.6.2 and v1.8.5 CLIs do not support the diagnostic coverage configuration.
+Use ordinary Go tests and a focused two-second active fuzz command from
+[CONTRIBUTING.md](CONTRIBUTING.md#verification). Shared checks use the public
+`golib` v2.1.1 release and checksum declared in `.golib.yaml`:
 
 ```sh
-make inventory
-make cohesion
 make check
 make ci
 ```
 
-The shared CI contract also verifies formatting, vetting, linting,
-vulnerabilities, authoritative numerical vectors, exact per-package coverage,
-mutation, benchmarks, API compatibility, examples, and live
-PostgreSQL/PostGIS releases.
+Both Make routes are bounded; base-free checks run deterministic seeds/corpora,
+not active fuzz campaigns. `make ci` checks the specification register offline.
+`make check-full` retains explicit online validation, full native fuzz budgets,
+numerical conformance, interoperability and benchmarks. Coverage is diagnostic.
+Live PostgreSQL/PostGIS evidence needs the explicit `POSTGIS_DSN` environment;
+an unset DSN skips that test and is not live integration proof.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 [CHANGELOG.md](CHANGELOG.md).

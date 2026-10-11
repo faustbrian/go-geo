@@ -66,17 +66,22 @@ unsafe, cgo, and numerical-risk audit.
 
 ## Verification strategy
 
-Statement coverage is exactly 100%, but coverage alone is not the confidence
-claim. The suite also contains authoritative vectors, algebraic/property
-invariants, geom and PostGIS differential tests, hostile size/depth/overflow
+Statement coverage is diagnostic as configured; coverage alone is not the
+confidence claim. The suite also contains authoritative vectors,
+algebraic/property invariants, geom and PostGIS differential tests, hostile size/depth/overflow
 cases, fuzz targets for every decoder, aggregate constructor, geodesic model,
 and adapter boundary, the race detector, and representative benchmarks.
 
-Fuzz locally for longer than the CI smoke duration before modifying parsers:
+Run a focused two-second active smoke for the parser you change:
 
 ```sh
-go test ./wkb -run '^$' -fuzz '^FuzzDecode$' -fuzztime 1m
+go test ./wkb -run '^$' -fuzz '^FuzzDecode$' -fuzztime=2s
 ```
+
+Ordinary Go tests and base-free `make check` run deterministic seeds/corpora;
+changed-source CI selects active smoke. Use `make check-full` for the existing
+10,000-iteration campaigns and selected broader race/conformance assurance,
+not as an unconditional parser-edit prerequisite.
 
 Checked-in corpora live below each package's `testdata/fuzz` directory. Their
 coverage and callback bounds are catalogued in
