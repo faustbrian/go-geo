@@ -1,3 +1,5 @@
+// Package main demonstrates per-connection PostGIS registration and a bounded query.
+// It requires POSTGIS_DSN; without it, only setup guidance is printed.
 package main
 
 import (

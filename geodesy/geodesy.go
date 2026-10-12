@@ -1,5 +1,6 @@
 // Package geodesy solves explicit spherical and ellipsoidal geodesic problems.
-// All operations require EPSG:4326 coordinates and perform no CRS conversion.
+// All operations require exact geo.WGS84 metadata (SRID and name) and perform
+// no CRS conversion. They run synchronously and start no background work.
 package geodesy
 
 import (
@@ -12,8 +13,8 @@ import (
 const meanEarthRadiusMeters = 6371008.8
 
 // InverseResult is the immutable solution to an inverse geodesic problem.
-// Bearings are undefined for coincident points and may be non-unique for
-// antipodal points; callers must inspect BearingsDefined before using them.
+// Bearings may be undefined or non-unique; inspect BearingsDefined and its
+// model-specific detection limits before using them.
 type InverseResult struct {
 	distance        geo.Distance
 	initialBearing  geo.Bearing
@@ -30,8 +31,10 @@ func (result InverseResult) InitialBearing() geo.Bearing { return result.initial
 // FinalBearing returns the forward bearing at the destination coordinate.
 func (result InverseResult) FinalBearing() geo.Bearing { return result.finalBearing }
 
-// BearingsDefined reports false for coincident points and exact mathematical
-// antipodes. It does not certify uniqueness for near-antipodal geodesics.
+// BearingsDefined reports the model's degeneracy flag, not geographic equality
+// or uniqueness. Sphere tests its computed central angle against zero and pi;
+// Ellipsoid tests exact Coordinate equality and mathematical antipodes. Distinct
+// encodings of the same pole or dateline can therefore remain flagged defined.
 func (result InverseResult) BearingsDefined() bool { return result.bearingsDefined }
 
 // Sphere solves great-circle problems on a sphere of an explicit radius.
@@ -59,7 +62,8 @@ func MeanEarthSphere() Sphere {
 	return Sphere{radius: radius}
 }
 
-// Name returns the stable model name.
+// Name returns the fixed mean-Earth label, including for custom-radius spheres.
+// Use Radius to distinguish their actual numerical model.
 func (sphere Sphere) Name() string { return "IUGG mean Earth sphere" }
 
 // Radius returns the sphere radius in metres.
@@ -86,6 +90,7 @@ func (sphere Sphere) Inverse(from, to geo.Coordinate) (InverseResult, error) {
 	haversine := math.Sin(deltaLatitude/2)*math.Sin(deltaLatitude/2) +
 		math.Cos(lat1)*math.Cos(lat2)*
 			math.Sin(deltaLongitude/2)*math.Sin(deltaLongitude/2)
+	// Clamp roundoff at the trigonometric domain boundary, not input accuracy.
 	haversine = math.Max(0, math.Min(1, haversine))
 	centralAngle := 2 * math.Atan2(math.Sqrt(haversine), math.Sqrt(1-haversine))
 	distance := mustDistance(sphere.radius.Meters() * centralAngle)

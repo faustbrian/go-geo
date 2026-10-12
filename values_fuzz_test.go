@@ -7,6 +7,10 @@ import (
 	geo "github.com/faustbrian/go-geo"
 )
 
+// FuzzValueDecoding truncates input to 4 KiB before text and JSON scalar/CRS
+// decoding. Errors/results are discarded; round-trip and category assertions
+// belong to the deterministic value tests.
+
 func FuzzValueDecoding(f *testing.F) {
 	f.Add([]byte("24.9384"))
 	f.Add([]byte(`{"longitude":24.9384,"latitude":60.1699,"crs":{"srid":4326,"name":"EPSG:4326"}}`))

@@ -6,6 +6,13 @@ versioning.
 
 ## Unreleased
 
+### Changed
+
+- Clarify source ownership, planar topology, bearing detection, codec resource
+  limits and SQL CRS checks without changing runtime behavior. Reconcile current
+  GEO-GEOJSON-DEC-002, GEO-OGC-DEC-002 and GEO-EPSG-DEC-001 descriptions with
+  their implemented allocation and CRS boundaries; preserve prior history.
+
 ## 1.1.5 - 2026-10-08
 
 ### Changed

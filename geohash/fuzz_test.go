@@ -6,6 +6,10 @@ import (
 	"github.com/faustbrian/go-geo/geohash"
 )
 
+// FuzzDecode exercises validation and neighbor construction for arbitrary hash
+// spellings. The decoder rejects lengths above twelve; results are discarded
+// rather than checked as an independent cell or rejection oracle.
+
 func FuzzDecode(f *testing.F) {
 	f.Add("ezs42")
 	f.Add("u60g0b3")

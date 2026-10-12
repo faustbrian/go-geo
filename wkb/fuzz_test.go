@@ -7,6 +7,10 @@ import (
 	"github.com/faustbrian/go-geo/wkb"
 )
 
+// FuzzDecode invokes plain WKB and SRID-bearing EWKB under small input and
+// geometry limits. Errors/results are discarded, not compared with an external
+// wire oracle or checked for correct rejection.
+
 func FuzzDecode(f *testing.F) {
 	f.Add([]byte{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	f.Add([]byte{1, 1, 0, 0, 32, 230, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})

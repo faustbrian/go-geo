@@ -14,11 +14,19 @@ field in `geo.Limits` selects the conservative default:
 - collection depth 32
 - 64 MiB encoded input
 
-Reduce these values for request paths. Limits cover aggregate nested geometry,
-not merely each child. Decoders reject truncated values, invalid lengths,
-integer overflow, unsupported dimensions/types, malformed numbers, excessive
-nesting, and trailing data. Constructors validate topology after applying
-resource bounds.
+Reduce these values for request paths. Point/node totals are checked by
+aggregate constructors; ring limits are per polygon, and binary nesting also
+counts multi-geometry children. Zero fields select defaults; negative fields
+are not normalized. Byte ceilings bound input, not total heap consumption.
+WKB checks declared counts against limits and remaining bytes before
+allocation. WKT checks lists while growing them. GeoJSON allocates decoded
+arrays and raw child JSON before constructor aggregate checks. Constructors
+validate topology after their structural/resource checks.
+
+Codec decoders reject malformed numbers, excessive nesting and trailing
+document data. NewFeature is a constructor, not a decoder: its ID validation
+reads only the first string/number token. Supply one complete JSON ID. No
+encoder accepts a configurable output-byte ceiling.
 
 These limits make work finite; they do not promise acceptable request latency.
 Polygon validity uses an upstream robust planar topology implementation whose
@@ -34,7 +42,7 @@ Public algorithm comments state their complexity. Scalar validation, bounds,
 spherical/ellipsoidal point geodesy, and radius envelopes are O(1). Line and
 polygon measurements are O(points). `Nearest` is O(n log n) and allocates O(n).
 Geohash encode/decode is O(precision); covers allocate O(returned cells) after
-checking `maxCells`.
+checking `maxCells`, then sort in O(k log k) work for k returned cells.
 
 Codec work is O(encoded bytes plus geometry size). The WKB encoder pre-sizes its
 buffer and has an allocation regression test: encoding a 100,000-point line is

@@ -7,6 +7,10 @@ import (
 	"github.com/faustbrian/go-geo/postgis"
 )
 
+// FuzzValueScan exercises binary and text scan entrypoints on one bounded
+// receiver. It opens no database and discards errors, so it proves neither
+// live interoperability nor the expected rejection for each input.
+
 func FuzzValueScan(f *testing.F) {
 	f.Add([]byte{1, 1, 0, 0, 32, 230, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	f.Add([]byte("0101000020e610000000000000000000000000000000000000"))

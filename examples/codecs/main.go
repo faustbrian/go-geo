@@ -1,3 +1,4 @@
+// Package main demonstrates longitude-first GeoJSON, EWKT and EWKB round trips.
 package main
 
 import (

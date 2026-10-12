@@ -304,6 +304,8 @@ func parseFloat(name string, data []byte) (float64, error) {
 	return value, nil
 }
 
+// unmarshalJSONFloat follows encoding/json float semantics: null leaves the
+// local scalar at zero. Constructors still validate before receiver assignment.
 func unmarshalJSONFloat(
 	name string,
 	data []byte,

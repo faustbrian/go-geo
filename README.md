@@ -49,8 +49,8 @@ if err != nil { /* handle */ }
 metres := result.Distance().Meters()
 ```
 
-Every operation rejects incompatible CRSs; no package performs a silent
-transformation.
+CRS-checking operations reject incompatible metadata; GeographyDWithin checks
+numeric SRID 4326 rather than the CRS name. No package transforms coordinates.
 
 ## Packages
 
@@ -85,7 +85,7 @@ for the shared design language this module follows.
 - NaN and infinity are rejected. Negative zero is canonicalized to positive
   zero. Decimal JSON/text uses Go's shortest round-trip-safe representation.
 - Bounds are inclusive. `west > east` explicitly crosses the antimeridian.
-- Polygon boundaries are `Boundary`; holes are excluded from `Interior`.
+- Polygon boundaries are `Boundary`; holes are excluded from `Inside`.
 - Empty Point, LineString, and Polygon values have no v1 representation. Empty
   MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection values are
   supported with an explicit CRS. Degenerate, open, self-intersecting, and
@@ -93,8 +93,9 @@ for the shared design language this module follows.
 - Default limits bound points, rings, geometries, nesting, and encoded bytes.
 - Errors support `errors.Is` with `geo.ErrRange`, `geo.ErrTopology`,
   `geo.ErrCRS`, `geo.ErrEncoding`, and `geo.ErrUnsupported`.
-- Coincident and exact antipodal inverse results report undefined bearings;
-  near-antipodal bearings may remain numerically sensitive.
+- Inverse bearing validity uses model-specific equality/angle checks, not
+  general geographic coincidence; equivalent pole/dateline encodings and
+  near-antipodal results need caller interpretation.
 
 ## Choosing process code or PostGIS
 
@@ -108,7 +109,7 @@ filtering, or unsupported GIS operations. `geodesy.Nearest` and
 
 Use ordinary Go tests and a focused two-second active fuzz command from
 [CONTRIBUTING.md](CONTRIBUTING.md#verification). Shared checks use the public
-`golib` v2.1.1 release and checksum declared in `.golib.yaml`:
+`golib` release and checksum declared in `.golib.yaml`:
 
 ```sh
 make check

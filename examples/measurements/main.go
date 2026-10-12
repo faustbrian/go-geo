@@ -1,3 +1,4 @@
+// Package main demonstrates explicit ellipsoidal line length and in-memory ranking.
 package main
 
 import (

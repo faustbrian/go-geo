@@ -7,6 +7,10 @@ import (
 	"github.com/faustbrian/go-geo/geodesy"
 )
 
+// FuzzModels invokes inverse/direct models across bounded angular inputs.
+// It skips errors/undefined bearings and discards direct results; this is panic
+// safety, not a finite-output, numerical-accuracy or round-trip assertion.
+
 func FuzzModels(f *testing.F) {
 	f.Add(uint16(0), uint16(0), uint16(65535), uint16(65535))
 	f.Add(uint16(32768), uint16(32768), uint16(49152), uint16(16384))

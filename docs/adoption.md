@@ -102,11 +102,13 @@ false positives. Confirm with geodesy or PostGIS.
 **Should I use `Nearest` for a database table?** No. It ranks a bounded in-memory
 slice. Use a PostGIS spatial index for database search.
 
-**Are returned slices mutable aliases?** No. Geometry and fragment accessors
-return owned copies; changing them does not change the value.
+**Are returned slices mutable aliases?** Geometry accessors copy exposed slices.
+Fragment.Args copies only its outer slice; mutable argument contents remain
+shared. Immutable geometry backing storage may be shared internally.
 
-**Does `BearingsDefined` prove the shortest geodesic is unique?** No. It marks
-coincident and exact mathematical antipodes undefined. Special symmetric and
+**Does `BearingsDefined` prove the shortest geodesic is unique?** No. It uses
+model-specific equality/angle tests, not general geographic coincidence.
+Special symmetric and
 near-antipodal ellipsoidal cases can still have multiple or sensitive azimuths.
 
 **What evidence blocks a release?** The numerical/tolerance matrix, codec and

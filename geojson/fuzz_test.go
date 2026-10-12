@@ -7,6 +7,10 @@ import (
 	"github.com/faustbrian/go-geo/geojson"
 )
 
+// FuzzDecode invokes geometry and Feature decoders with a 4 KiB byte ceiling
+// and small geometry limits. Discarded results exercise panic safety, not a
+// complete rejection profile or round-trip assertion.
+
 func FuzzDecode(f *testing.F) {
 	f.Add([]byte(`{"type":"Point","coordinates":[24.9384,60.1699]}`))
 	f.Add([]byte(`{"type":"Feature","geometry":null,"properties":{}}`))

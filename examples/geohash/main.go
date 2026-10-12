@@ -1,3 +1,4 @@
+// Package main demonstrates angular geohash cells and directional neighbors.
 package main
 
 import (

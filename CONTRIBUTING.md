@@ -45,7 +45,7 @@ go test ./wkb -run '^$' -fuzz '^FuzzDecode$' -fuzztime=2s
 
 Select the native fuzz target and package affected by your change. Ordinary
 tests run deterministic fuzz seeds and saved corpora. For shared checks,
-install the public `golib` v2.1.1 release declared in `.golib.yaml` and verify
+install the public `golib` release declared in `.golib.yaml` and verify
 its checksums:
 
 ```bash

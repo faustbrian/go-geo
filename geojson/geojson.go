@@ -1,5 +1,8 @@
 // Package geojson provides bounded RFC 7946 geometry and Feature codecs.
-// Callers must pass EPSG:4326 explicitly; no CRS transformation is performed.
+// Callers must pass exact geo.WGS84 metadata; no CRS transformation is performed.
+// This is a 2D geometry/individual Feature subset: foreign members are not
+// retained, FeatureCollection is unsupported, and input winding is preserved.
+// Calls are synchronous; byte limits bound input, not total parsing heap use.
 package geojson
 
 import (
@@ -23,7 +26,10 @@ type Feature struct {
 	id         json.RawMessage
 }
 
-// NewFeature validates and owns an optional geometry, properties, and JSON ID.
+// NewFeature owns optional geometry, properties and ID bytes. It checks each
+// property as complete JSON, but the ID check reads only the first string or
+// number token; callers must supply one complete ID. It does not require WGS84
+// geometry or apply geo.Limits. Validate the CRS before MarshalFeature.
 func NewFeature(
 	geometry geo.Geometry,
 	properties map[string]json.RawMessage,
@@ -80,6 +86,9 @@ func Marshal(geometry geo.Geometry) ([]byte, error) {
 }
 
 // Unmarshal decodes one bounded GeoJSON geometry using an explicit CRS.
+// The encoded-byte ceiling is checked first; coordinate arrays and raw child
+// JSON are allocated by encoding/json before constructor aggregate limits.
+// Extra object members are ignored, while coordinate arity is exactly two.
 func Unmarshal(data []byte, crs geo.CRS, limits geo.Limits) (geo.Geometry, error) {
 	limits = geo.ResolveLimits(limits)
 	if err := validateInput(data, crs, limits); err != nil {
@@ -90,6 +99,10 @@ func Unmarshal(data []byte, crs geo.CRS, limits geo.Limits) (geo.Geometry, error
 }
 
 // MarshalFeature encodes a Feature with deterministic member order.
+// A non-WGS84 geometry accepted by NewFeature cannot be encoded by Marshal;
+// MarshalFeature ignores that nested error and emits a null geometry instead.
+// Validated raw values are represented through encoding/json, not guaranteed
+// byte-for-byte preservation of their original whitespace.
 func MarshalFeature(feature Feature) ([]byte, error) {
 	geometry := json.RawMessage("null")
 	if feature.geometry != nil {
@@ -412,6 +425,8 @@ func validateInput(data []byte, crs geo.CRS, limits geo.Limits) error {
 	return nil
 }
 
+// validateID uses the decoder's first token without an EOF check;
+// this is not complete-document validation of a constructor-provided raw ID.
 func validateID(id json.RawMessage) error {
 	if len(id) == 0 {
 		return nil

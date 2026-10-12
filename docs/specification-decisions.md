@@ -38,7 +38,7 @@ than becoming an undocumented default.
 - **Selected behavior:** The package round-trips all seven geometry families plus individual Feature objects, preserves Feature IDs and raw properties, rejects positions that are not exactly two finite ordinates, and does not claim FeatureCollection or bbox support.
 - **Rationale:** Rejecting unrepresentable dimensions avoids silent data loss while keeping the public immutable model explicit.
 - **Security consequences:** Unsupported dimensions cannot be hidden from validation by being discarded.
-- **Resource consequences:** Encoded bytes, point counts, geometry counts, and collection depth are bounded before retained allocation.
+- **Resource consequences:** Encoded bytes are checked before JSON parsing. Raw child JSON and coordinate arrays may allocate before constructor point, ring and geometry checks; collection depth bounds recursive geometry decoding.
 - **Compatibility consequences:** Documents using altitude, measures, FeatureCollection, or bbox require a separate document layer.
 - **Wire consequences:** Emitted geometry and Feature objects contain only the represented RFC members and two-element positions.
 - **Executable evidence:** TestEveryGeometryFamilyRoundTrips, TestFeaturePreservesRawPropertiesAndID, TestGeometryDecoderRejectsMalformedCoordinatesAndTopology
@@ -84,7 +84,7 @@ than becoming an undocumented default.
 - **Selected behavior:** WKT and WKB support the seven two-dimensional geometry families, caller-selected WKB byte order, caller-supplied CRS on decode, and empty MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection; Z, M, ZM, non-finite coordinates, and empty primitive geometries are rejected.
 - **Rationale:** Rejecting values the immutable model cannot preserve prevents dimensional or emptiness data loss.
 - **Security consequences:** Unsupported flags, non-finite values, hostile counts, trailing input, and inconsistent nested types fail closed.
-- **Resource consequences:** Encoded bytes, counts, and recursive geometry depth are bounded before allocation.
+- **Resource consequences:** Encoded bytes and recursive depth are bounded. WKB checks each declared count against its limit and remaining bytes before allocation; WKT checks list counts while parsing, with aggregate constructor checks afterward.
 - **Compatibility consequences:** Consumers needing Z, M, ZM, or primitive empties require a different model or an explicitly versioned future extension.
 - **Wire consequences:** Plain WKT and WKB never carry SRID metadata; WKB may be NDR or XDR as selected by the caller.
 - **Executable evidence:** TestEveryGeometryFamilyAndEmptyCollectionRoundTrips, TestEveryGeometryFamilyRoundTripsInBothByteOrders, TestWKTRejectsMalformedDimensionsTopologyAndResourceExhaustion, TestDecoderRejectsHostileCountsTruncationAndTrailingBytes
@@ -150,9 +150,9 @@ than becoming an undocumented default.
 - **Issue:** EPSG:4326 identifies the WGS 84 geographic CRS and ellipsoid but does not select whether a utility API should transform other CRSs, use ellipsoidal or spherical distance, or silently relabel ordinates.
 - **Credible interpretations:** Transform every known SRID internally. | Treat every angular coordinate as WGS 84. | Require explicit EPSG:4326 and expose separately named spherical and ellipsoidal models without transformation.
 - **Peer behavior:** PostGIS provides explicit geometry and geography casts and agrees with the checked WGS84 geography results; GeographicLib vectors agree with the ellipsoidal implementation.
-- **Selected behavior:** geo.WGS84 returns explicit EPSG:4326 metadata; geodesy and geography helpers require it, never transform coordinates, WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.
+- **Selected behavior:** geo.WGS84 returns explicit EPSG:4326 metadata. Geodesy requires exact WGS84 SRID and name; GeographyDWithin checks numeric SRID 4326 only. Neither transforms coordinates. WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.
 - **Rationale:** Model and transformation choices materially affect distance and must remain visible at the call site.
-- **Security consequences:** Foreign or mislabeled CRS input fails instead of producing plausible but incorrect authorization distances.
+- **Security consequences:** Geodesy rejects foreign CRS metadata; GeographyDWithin rejects other numeric SRIDs but accepts any name for 4326. Callers must ensure that supplied metadata truthfully describes the input datum.
 - **Resource consequences:** No CRS database, grid file, or network lookup occurs; numerical work is bounded per operation.
 - **Compatibility consequences:** Projected inputs must be transformed by an explicitly selected external component before geodesy or geography use.
 - **Wire consequences:** SRIDs are preserved as metadata by extended codecs but no coordinate bytes are transformed.

@@ -110,7 +110,8 @@ func (distance Distance) Kilometers() float64 { return distance.metres / 1000 }
 func (distance Distance) Equal(other Distance) bool { return distance == other }
 
 // CRS identifies a coordinate reference system. The package never transforms
-// coordinates between CRS values implicitly.
+// coordinates between CRS values implicitly. Identity is exact SRID/name
+// equality, not registry equivalence; names are not trimmed or resolved.
 type CRS struct {
 	srid int32
 	name string

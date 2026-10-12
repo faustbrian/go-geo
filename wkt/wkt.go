@@ -1,4 +1,8 @@
 // Package wkt provides bounded two-dimensional WKT and EWKT codecs.
+// Decoders consume input synchronously without retaining its mutable bytes.
+// Errors may wrap parser causes containing input; redact before logging.
+// Coordinates retain geographic scalar ranges even for custom SRID metadata.
+// Encoders return owned output without a configurable encoded-byte ceiling.
 package wkt
 
 import (
@@ -79,6 +83,8 @@ func UnmarshalEWKT(data []byte, limits geo.Limits) (geo.Geometry, error) {
 	return Unmarshal(data[separator+1:], crs, limits)
 }
 
+// parser borrows data only for the call. Its depth counter applies to
+// collection recursion; per-list counts and constructor totals are distinct.
 type parser struct {
 	data     []byte
 	position int

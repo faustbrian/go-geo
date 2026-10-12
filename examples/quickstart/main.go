@@ -1,3 +1,4 @@
+// Package main demonstrates WGS84 distance and a separate spherical envelope.
 package main
 
 import (

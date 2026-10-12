@@ -21,9 +21,14 @@ const (
 )
 
 // Geometry is the closed, package-owned geometry model. The unexported methods
-// prevent external implementations from bypassing CRS and resource invariants.
+// restrict direct external implementations; cloning accepts only package values.
+// Callers must still use constructors rather
+// than zero-value geometry. Constructed values are immutable and may be shared
+// between goroutines; callers must not concurrently reassign pointer inputs.
 type Geometry interface {
+	// Type returns the stable geometry family identifier.
 	Type() GeometryType
+	// CRS returns stored metadata, not a transformation or registry lookup.
 	CRS() CRS
 	geometryMarker()
 	pointCount() int
@@ -33,6 +38,8 @@ type Geometry interface {
 
 // CloneGeometry returns a canonical owned value. Pointer inputs are copied to
 // values so later pointer reassignment cannot mutate the returned geometry.
+// Nil and typed-nil pointers return ErrTopology. This does not revalidate zero
+// values or deep-copy inaccessible immutable backing arrays.
 func CloneGeometry(geometry Geometry) (Geometry, error) { return cloneGeometry(geometry) }
 
 // Point is an immutable coordinate geometry.
@@ -279,6 +286,9 @@ func NewGeometryCollection(geometries []Geometry, crs CRS) (GeometryCollection, 
 }
 
 // NewGeometryCollectionWithLimits constructs a collection under resource limits.
+// Counts include the outer collection; a leaf has depth one. Child coordinates
+// and nested nodes accumulate before ownership is accepted. Immutable child
+// storage may be shared, but the input interface slice is copied.
 func NewGeometryCollectionWithLimits(
 	geometries []Geometry,
 	crs CRS,
@@ -457,6 +467,8 @@ func validateDeclaredCRS(geometry string, crs CRS) error {
 	return nil
 }
 
+// exceeds checks subtraction before addition so hostile aggregate counts do
+// not wrap an int and evade the configured bound.
 func exceeds(total, addition, limit int) bool {
 	return addition > limit || total > limit-addition
 }

@@ -4,16 +4,26 @@
 
 `geojson.Marshal` and `Unmarshal` support every package geometry.
 `MarshalFeature` and `UnmarshalFeature` support a geometry, optional ID, and an
-owned JSON property object. GeoJSON has no standard SRID field here: callers
+owned JSON property object. Raw property/ID bytes are copied at construction;
+encoding/json can compact their whitespace on output. NewFeature validates
+only the first ID token and does not require WGS84 geometry: supply complete
+JSON IDs and exact WGS84 metadata when the Feature will be marshaled.
+MarshalFeature ignores a nested geometry encoding error and emits null geometry
+instead; callers must not interpret a successful Feature marshal as geometry
+CRS validation. GeoJSON has no standard SRID field here: callers
 must supply the CRS when decoding. Coordinate order remains longitude,
 latitude.
 
 ## WKT, EWKT, WKB, and EWKB
 
 Plain WKT/WKB omit CRS, so decoding requires a caller-supplied CRS. EWKT/EWKB
-carry a positive SRID. Encoders emit canonical 2D representations and reject
-nil or invalid geometry. WKB callers choose byte order. All decoders apply
-`geo.Limits`, including `MaxEncodedBytes`, before unbounded work.
+carry a positive SRID. Encoders emit 2D representations from the package model
+and reject nil clones;
+they do not revalidate every zero-value geometry. Use validated constructors.
+WKB callers choose byte order. Decoders check `MaxEncodedBytes` before parsing,
+then apply format-specific structural/aggregate limits, not a heap-size cap.
+Extended codecs reconstruct EPSG:<SRID> names from numeric SRIDs, so custom
+CRS labels are not retained through EWKT/EWKB.
 
 The live PostGIS corpus exercises every geometry family, supported empty
 aggregate, GeoJSON/WKT/EWKT/WKB/EWKB representation, NDR and XDR byte order,
@@ -84,7 +94,9 @@ quotes each segment. `GeographyDWithin` and `Intersects` return fixed SQL plus
 separate arguments. They never interpolate values. The caller owns the full
 query and must pass the returned arguments in placeholder order.
 
-Use `GeographyDWithin` for metre distances on WGS84 geography. Use `Intersects`
+Use `GeographyDWithin` for metre distances on WGS84 geography. It checks numeric
+SRID 4326 only, unlike geodesy's exact SRID/name check; callers must attach
+truthful datum metadata. Use `Intersects`
 for the column's geometry coordinate system. These helpers are intentionally not
 a query builder.
 

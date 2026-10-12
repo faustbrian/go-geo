@@ -1,3 +1,4 @@
+// Package main demonstrates owned XY conversion through the canonical geom adapter.
 package main
 
 import (

@@ -14,7 +14,8 @@ const (
 	maxPrecision = 12
 )
 
-// Hash is a canonical lowercase geohash.
+// Hash stores a geohash spelling. Encode returns canonical lowercase; direct
+// conversions from string are not validated until Decode or Neighbors.
 type Hash string
 
 // Cell is the exact angular cell represented by a geohash.
@@ -33,15 +34,24 @@ func (cell Cell) Bounds() geo.BoundingBox { return cell.bounds }
 // Center returns the midpoint of the angular cell.
 func (cell Cell) Center() geo.Coordinate { return cell.center }
 
-// NeighborSet contains the eight cells adjacent to a geohash.
+// NeighborSet contains eight directional results; polar clamping can repeat
+// cells or return the original cell. The zero value contains invalid empty hashes.
 type NeighborSet struct {
-	North     Hash
+	// North is the cell in that compass direction after wrap/clamp.
+	North Hash
+	// NorthEast is the cell in that compass direction after wrap/clamp.
 	NorthEast Hash
-	East      Hash
+	// East is the cell in that compass direction after wrap/clamp.
+	East Hash
+	// SouthEast is the cell in that compass direction after wrap/clamp.
 	SouthEast Hash
-	South     Hash
+	// South is the cell in that compass direction after wrap/clamp.
+	South Hash
+	// SouthWest is the cell in that compass direction after wrap/clamp.
 	SouthWest Hash
-	West      Hash
+	// West is the cell in that compass direction after wrap/clamp.
+	West Hash
+	// NorthWest is the cell in that compass direction after wrap/clamp.
 	NorthWest Hash
 }
 
@@ -59,8 +69,9 @@ func (neighbors NeighborSet) All() []Hash {
 	}
 }
 
-// Encode returns a standard geohash at precision 1 through 12. It is O(p),
-// allocates one p-byte string, and requires EPSG:4326.
+// Encode returns a standard geohash at precision 1 through 12 in O(p) work.
+// It requires exact geo.WGS84 metadata. Midpoint equality selects the upper half;
+// -180 and +180 are not canonicalized to the same hash.
 func Encode(coordinate geo.Coordinate, precision int) (Hash, error) {
 	if err := validatePrecision(precision); err != nil {
 		return "", err
@@ -186,8 +197,9 @@ func Neighbors(hash Hash) (NeighborSet, error) {
 
 // Cover returns every angular geohash cell needed to cover bounds. Results are
 // sorted, unique, and may include area outside the bounds at cell edges. Work
-// and allocation are O(number of returned cells); maxCells is checked before
-// allocation. This helper does not replace a database spatial index.
+// is O(k * precision + k log k) including sorting, with O(k) output storage.
+// maxCells is checked before output allocation. Inclusive index endpoints may
+// add a cell at a shared edge. This helper does not replace a spatial index.
 func Cover(
 	bounds geo.BoundingBox,
 	precision int,
@@ -260,6 +272,8 @@ func Cover(
 	return hashes, nil
 }
 
+// dimensions relies on precision validation (at most 60 interleaved bits),
+// keeping row/column counts and their products within the int64 grid budget.
 func dimensions(precision int) (columns, rows int64, width, height float64) {
 	bits := precision * 5
 	longitudeBits := (bits + 1) / 2
@@ -294,6 +308,7 @@ func makeBounds(west, south, east, north float64) geo.BoundingBox {
 	return bounds
 }
 
+// coordinate is called only with finite cell centers inside the scalar ranges.
 func coordinate(longitude, latitude float64) geo.Coordinate {
 	lon, _ := geo.NewLongitude(longitude)
 	lat, _ := geo.NewLatitude(latitude)

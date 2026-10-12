@@ -7,7 +7,7 @@
     },
     {
       "id": "GEO-GEOJSON-DEC-002",
-      "digests": ["cef5811efc3ebad7e9ca79ecfed36ca10073e002196c8c42c61687985bb61267"]
+      "digests": ["cef5811efc3ebad7e9ca79ecfed36ca10073e002196c8c42c61687985bb61267", "c41ab5841411b98b5745c04d48859ac143fcfd64aeb66a8af3f29a0703d35728"]
     },
     {
       "id": "GEO-OGC-DEC-001",
@@ -15,7 +15,7 @@
     },
     {
       "id": "GEO-OGC-DEC-002",
-      "digests": ["6964003803fd82e62b195afed7beae6bf0b73a89fb3720f7c1b8f223f57406ea"]
+      "digests": ["6964003803fd82e62b195afed7beae6bf0b73a89fb3720f7c1b8f223f57406ea", "82d475cf8489d04b5687c99576069244323754016fd3d64d101e197352766333"]
     },
     {
       "id": "GEO-POSTGIS-DEC-001",
@@ -27,7 +27,7 @@
     },
     {
       "id": "GEO-EPSG-DEC-001",
-      "digests": ["3e420bc9960d2f42169f0bfda8ec50fd3bb752ae0be8d52c7760cd260b32b373"]
+      "digests": ["3e420bc9960d2f42169f0bfda8ec50fd3bb752ae0be8d52c7760cd260b32b373", "0abe5eae8b79dd1ab147870506f7df93a1e0a806e583ff81e61c51a1ec998cfc"]
     },
     {
       "id": "GEO-GEOHASH-DEC-001",

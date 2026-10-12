@@ -1,3 +1,4 @@
+// Package main demonstrates copied raw properties and IDs in a GeoJSON Feature.
 package main
 
 import (

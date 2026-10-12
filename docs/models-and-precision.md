@@ -3,8 +3,10 @@
 ## Coordinates and CRS
 
 Coordinates are `(longitude, latitude)` in every API and codec. WGS84 is
-`EPSG:4326`. Custom positive SRIDs may be represented, but geodesy and geohash
-operations require WGS84 and return `geo.ErrCRS` otherwise. The module never
+`EPSG:4326`. Custom positive SRIDs may be represented, but coordinate scalars
+still use geographic degree ranges, not arbitrary projected x/y units. Geodesy
+and geohash require exact WGS84 SRID/name metadata and return `geo.ErrCRS`
+otherwise. The module never
 transforms coordinates.
 
 All scalar values use IEEE 754 `float64`. Constructors reject NaN, infinity,
@@ -24,9 +26,14 @@ distance; do not represent it as an ellipsoidal answer. `geodesy.NewSphere`
 supports an explicitly chosen positive radius.
 
 Inverse operations are symmetric in distance, but initial and final bearings
-depend on direction. Bearings are undefined for coincident points. Exact
-mathematical antipodes on both supported models also have no unique bearing;
-`BearingsDefined()` returns false. Near-antipodal azimuths can be
+depend on direction. The degeneracy flag is model-specific: Sphere tests its
+computed central angle
+against zero and pi; Ellipsoid tests exact Coordinate equality and mathematical
+antipodes. Different longitudes at one pole or -180/+180 dateline encodings can
+represent one location yet remain flagged defined. `BearingsDefined()` is not
+a geographic-coincidence detector. Exact mathematical antipodes have no unique
+bearing, but floating-point angle detection also has numerical limits.
+Near-antipodal azimuths can be
 ill-conditioned, and symmetric ellipsoidal cases may have multiple shortest
 paths, so the method is not a general proof of geodesic uniqueness.
 
@@ -46,7 +53,12 @@ overlapping holes, and degenerate rings fail with `geo.ErrTopology`. Input
 winding is accepted when topology is valid and is preserved by the core model.
 
 `Polygon.Locate` returns `Outside`, `Inside`, or `Boundary`. Exterior and hole
-edges are boundaries. Points inside holes are outside the polygon.
+edges are boundaries. Points inside holes are outside the polygon. Topology
+validation unwraps all rings against the first shell longitude; Locate unwraps
+each endpoint against the query longitude. Edges are straight in the resulting
+plane, with exact float64 boundary collinearity and no hidden epsilon. Do not
+interpret this as geodesic containment for arbitrary global polygons.
+MultiPolygon validates each member, not cross-member overlap or union topology.
 
 ## Empty geometry
 

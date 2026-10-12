@@ -139,6 +139,8 @@ func preflightCollection(collection *geom.GeometryCollection, limits geo.Limits)
 	}
 
 	geometryCount := 1
+	// Only active ancestors imply a cycle. A shared child reached through a
+	// different branch is valid and counts again toward geometry/point limits.
 	active := map[*geom.GeometryCollection]struct{}{collection: {}}
 	stack := []collectionFrame{{collection: collection, depth: 1}}
 	for len(stack) > 0 {

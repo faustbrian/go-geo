@@ -7,10 +7,15 @@ import (
 	geo "github.com/faustbrian/go-geo"
 )
 
-// Model is the package-owned contract for a geodesic distance model.
+// Model is the caller-implementable contract for a geodesic distance model.
+// Calls are synchronous without context cancellation or panic recovery. Custom
+// models own their validation, numerical policy and concurrency safety.
 type Model interface {
+	// Name returns a human-readable model label.
 	Name() string
+	// Inverse calculates distance and endpoint forward bearings, or an error.
 	Inverse(from, to geo.Coordinate) (InverseResult, error)
+	// Destination calculates the endpoint and its forward bearing.
 	Destination(
 		from geo.Coordinate,
 		initial geo.Bearing,
@@ -18,8 +23,9 @@ type Model interface {
 	) (geo.Coordinate, geo.Bearing, error)
 }
 
-// RadiusEnvelope returns the smallest axis-aligned spherical envelope around
-// center. It is O(1), allocates no heap memory, and is exact for this sphere.
+// RadiusEnvelope calculates an axis-aligned angular envelope on this sphere.
+// Non-polar bounds are rounded outward by a small floating-point margin; this
+// is not exact-real arithmetic or an ellipsoidal envelope.
 // Envelopes touching a pole span every longitude.
 func (sphere Sphere) RadiusEnvelope(
 	center geo.Coordinate,
@@ -61,8 +67,10 @@ func (sphere Sphere) RadiusEnvelope(
 	)
 }
 
-// LineLength sums segment distances using model. It is O(n), allocates no
-// memory, and inherits the selected model's numerical behavior.
+// LineLength makes one model call per segment without geometry-sized storage.
+// It inherits the selected model's numerical behavior and cost.
+// A nil interface is rejected; typed-nil models are passed through to their
+// methods. Empty zero-value lines produce zero length without a model call.
 func LineLength(model Model, line geo.LineString) (geo.Distance, error) {
 	if model == nil {
 		return geo.Distance{}, missingModelError()
@@ -116,7 +124,9 @@ func (neighbor Neighbor) Distance() geo.Distance { return neighbor.distance }
 
 // Nearest ranks an in-memory candidate set by model distance and returns at
 // most limit entries. It is O(n log n), allocates O(n), is stable for equal
-// distances, and does not replace a spatial database index.
+// distances, and does not replace a spatial database index. All candidates are
+// evaluated and sorted even when limit is zero; it does not bound work. The
+// returned slice is owned but retains storage for the full ranked candidate set.
 func Nearest(
 	model Model,
 	origin geo.Coordinate,
@@ -197,6 +207,7 @@ func missingModelError() error {
 	}
 }
 
+// outward adds a fixed representable-value margin, not a measured error bound.
 func outward(value, direction float64) float64 {
 	for range 8 {
 		value = math.Nextafter(value, direction)

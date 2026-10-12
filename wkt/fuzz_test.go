@@ -7,6 +7,10 @@ import (
 	"github.com/faustbrian/go-geo/wkt"
 )
 
+// FuzzDecode invokes plain WKT and SRID-prefixed EWKT under small input and
+// geometry limits. Errors/results are discarded, not compared with a grammar
+// oracle or checked for round-trip equivalence.
+
 func FuzzDecode(f *testing.F) {
 	f.Add([]byte("POINT (24.9384 60.1699)"))
 	f.Add([]byte("SRID=4326;POINT (24.9384 60.1699)"))

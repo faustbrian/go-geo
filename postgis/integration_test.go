@@ -21,6 +21,9 @@ import (
 	"github.com/faustbrian/go-geo/wkt"
 )
 
+// TestPostGISIntegration requires an explicit live DSN. Its query context is
+// bounded, but deferred Close uses Background; external test/service lifetime
+// controls cleanup if a connection close stalls. An unset DSN is not proof.
 func TestPostGISIntegration(t *testing.T) {
 	dsn := os.Getenv("POSTGIS_DSN")
 	if dsn == "" {

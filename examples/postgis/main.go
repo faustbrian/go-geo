@@ -1,3 +1,5 @@
+// Package main demonstrates bound SQL fragments without opening a database.
+// The placeholder OIDs are illustrative, not installation-specific discovery.
 package main
 
 import (

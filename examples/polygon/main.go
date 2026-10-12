@@ -1,3 +1,4 @@
+// Package main demonstrates planar shell, hole and boundary classifications.
 package main
 
 import (

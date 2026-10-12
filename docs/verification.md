@@ -30,7 +30,9 @@ There is no package-wide spherical-versus-ellipsoidal error bound because the
 error depends on latitude, direction, and distance. Callers requiring an earth
 accuracy claim must select `WGS84Ellipsoid`.
 
-`BearingsDefined` detects coincident points and exact mathematical antipodes.
+`BearingsDefined` uses model-specific stored equality/central-angle tests, not
+general geographic coincidence; distinct pole/dateline encodings can remain
+flagged defined.
 Near-antipodal azimuths may still be ill-conditioned, and symmetric ellipsoidal
 cases can have more than one shortest geodesic. The method is not a general
 uniqueness certificate.
@@ -80,9 +82,13 @@ discovered regression inputs under their package's `testdata/fuzz` directory:
 | `geohash.FuzzDecode` | Invalid alphabet, length, poles, and neighbor wrapping. |
 | `postgis.FuzzValueScan` | Binary and hexadecimal EWKB, prefixes, malformed lengths, and scan ownership. |
 
-Fuzz callbacks cap their own work and pass strict `geo.Limits`. The codecs
-check encoded byte limits before recursive parsing, collection depth before
-descending, and aggregate counts before allocating child storage. Constructor
+Decoder fuzz callbacks pass small `geo.Limits`; root constructor/value callbacks
+also truncate their inputs. These callback results are mostly discarded, so
+these targets alone do not assert correct rejection, round trips or numerical
+accuracy. Adapter parity targets additionally compare values/errors. Codecs
+check encoded bytes before parsing and depth before recursion, but GeoJSON
+allocates raw/coordinate JSON arrays before constructor aggregate checks; WKB
+preflights each count against remaining wire bytes. Constructor
 tests cover integer-overflow-safe count addition. Fuzzing supplements, rather
 than replaces, deterministic hostile length, truncation, overflow, and depth
 tests.

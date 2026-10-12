@@ -9,11 +9,16 @@ import (
 // Limits bounds geometry construction and untrusted codec work. A zero field
 // selects the corresponding DefaultLimits value.
 type Limits struct {
-	MaxPoints          int
-	MaxRings           int
-	MaxGeometries      int
+	// MaxPoints bounds coordinates within a constructed geometry, including aggregate children.
+	MaxPoints int
+	// MaxRings bounds the exterior plus holes of each polygon.
+	MaxRings int
+	// MaxGeometries bounds children for multi-lines/polygons and total nodes for collections.
+	MaxGeometries int
+	// MaxCollectionDepth bounds collection node depth; binary codecs also count nested multi children.
 	MaxCollectionDepth int
-	MaxEncodedBytes    int64
+	// MaxEncodedBytes bounds decoder input bytes, not total heap use or encoder output.
+	MaxEncodedBytes int64
 }
 
 // DefaultLimits returns conservative process-local resource limits.
@@ -40,6 +45,7 @@ const (
 )
 
 // LineString is an immutable sequence of at least two coordinates in one CRS.
+// The zero value is not a constructed line. Adjacent duplicate points are allowed.
 type LineString struct {
 	coordinates []Coordinate
 	crs         CRS
@@ -97,7 +103,10 @@ func (line LineString) geometryCount() int { return 1 }
 func (line LineString) geometryDepth() int { return 1 }
 
 // Polygon is an immutable closed exterior ring with zero or more closed holes.
-// Either winding direction is accepted and preserved.
+// Either winding direction is accepted and preserved. Validation uses planar
+// straight edges after longitude unwrapping, not geodesics. The zero value is
+// not a constructed polygon. MultiPolygon does not validate relations between
+// otherwise valid member polygons.
 type Polygon struct {
 	exterior []Coordinate
 	holes    [][]Coordinate
@@ -110,6 +119,8 @@ func NewPolygon(exterior []Coordinate, holes [][]Coordinate) (Polygon, error) {
 }
 
 // NewPolygonWithLimits constructs a polygon under explicit resource limits.
+// Closure is exact coordinate/CRS equality. Ring shape is checked before
+// upstream planar topology validation; inputs are copied on success.
 func NewPolygonWithLimits(exterior []Coordinate, holes [][]Coordinate, limits Limits) (Polygon, error) {
 	limits = limits.withDefaults()
 	if len(holes)+1 > limits.MaxRings {
@@ -176,8 +187,9 @@ func (polygon Polygon) Holes() [][]Coordinate {
 }
 
 // Locate uses an even-odd ray crossing test. It is O(n) in total ring points,
-// allocates no memory, treats ring boundaries explicitly, and unwraps
-// longitudes relative to the query point for antimeridian-safe comparisons.
+// treats ring boundaries explicitly, and unwraps each longitude relative to
+// the query point. Edges are planar; exact float64 collinearity defines Boundary
+// without an epsilon. This is not a geodesic or arbitrary global-polygon test.
 func (polygon Polygon) Locate(point Coordinate) (Location, error) {
 	if !polygon.crs.Equal(point.crs) {
 		return Outside, incompatibleCRSError(polygon.crs, point.crs)
@@ -260,6 +272,8 @@ func locateInRing(ring []Coordinate, point Coordinate) Location {
 	return Outside
 }
 
+// pointOnSegment intentionally uses exact arithmetic comparisons: introducing
+// an epsilon here would change the public three-state boundary policy.
 func pointOnSegment(x, y, x1, y1, x2, y2 float64) bool {
 	cross := (x-x1)*(y2-y1) - (y-y1)*(x2-x1)
 	return cross == 0 && x >= min(x1, x2) && x <= max(x1, x2) &&
@@ -282,6 +296,8 @@ func cloneCoordinates(coordinates []Coordinate) []Coordinate {
 	return append([]Coordinate(nil), coordinates...)
 }
 
+// validatePolygonTopology uses the first shell longitude as the shared planar
+// reference for shell and holes. Locate instead uses its query as reference.
 func validatePolygonTopology(exterior []Coordinate, holes [][]Coordinate) error {
 	reference := exterior[0].longitude.degrees
 	rings := make([][]float64, 1+len(holes))
@@ -332,4 +348,5 @@ func (limits Limits) withDefaults() Limits {
 }
 
 // ResolveLimits replaces zero fields with DefaultLimits values.
+// Negative fields are preserved, not validated or normalized to defaults.
 func ResolveLimits(limits Limits) Limits { return limits.withDefaults() }

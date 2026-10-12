@@ -1,4 +1,6 @@
-// Package postgis connects bounded geo values to PostGIS and pgx.
+// Package postgis provides synchronous PostGIS EWKB mapping and SQL fragments.
+// It opens no connection or goroutine. Callers own database contexts, row-size
+// budgets, connection/map setup and synchronization of mutable scan receivers.
 package postgis
 
 import (
@@ -23,7 +25,9 @@ type Value struct {
 	valid    bool
 }
 
-// NewValue validates and owns geometry for database use.
+// NewValue canonicalizes geometry for database use; nil represents SQL NULL.
+// It stores limits for future scans, not revalidation of already constructed
+// geometry. Nil pointers and unsupported clones return the root typed error.
 func NewValue(geometry geo.Geometry, limits geo.Limits) (Value, error) {
 	limits = geo.ResolveLimits(limits)
 	if geometry == nil {
@@ -61,6 +65,9 @@ func (value Value) Value() (driver.Value, error) {
 }
 
 // Scan implements database/sql.Scanner for binary EWKB and hexadecimal EWKB.
+// Success replaces the receiver; errors preserve it. Input bytes are consumed
+// synchronously and not retained as a mutable alias. Do not scan concurrently
+// into the same Value. NULL resets it while retaining resolved limits.
 func (value *Value) Scan(source any) error {
 	if value == nil {
 		return encodingError("cannot scan into a nil Value", nil)
@@ -95,6 +102,8 @@ func (value *Value) Scan(source any) error {
 
 // Codec is a pgx codec for the PostGIS geometry type.
 type Codec struct {
+	// Limits bounds wire decoding; zero fields select geo defaults. It does not
+	// impose a new encoding limit on an already constructed geometry.
 	Limits geo.Limits
 }
 
@@ -140,7 +149,9 @@ func (codec Codec) PlanScan(
 	return scanPlan{format: format, limits: codec.Limits}
 }
 
-// DecodeDatabaseSQLValue decodes a wire value for database/sql.
+// DecodeDatabaseSQLValue returns an owned binary byte slice or text string
+// for database/sql. It enforces wire size and format but does not validate EWKB
+// contents; the receiving Scanner performs geometry decoding.
 func (codec Codec) DecodeDatabaseSQLValue(
 	_ *pgtype.Map,
 	_ uint32,
@@ -180,7 +191,9 @@ func (codec Codec) DecodeValue(
 	return value, nil
 }
 
-// Register registers a PostGIS geometry OID on a pgx type map.
+// Register registers the supplied PostGIS OID on a caller-owned pgx type map.
+// Resolve installation-specific OIDs externally and register during connection
+// setup, not concurrently with map use. This performs no lookup or I/O.
 func Register(typeMap *pgtype.Map, oid uint32, limits geo.Limits) {
 	typeMap.RegisterType(&pgtype.Type{
 		Name:  "geometry",
@@ -295,12 +308,16 @@ type Fragment struct {
 // SQL returns the fixed SQL expression.
 func (fragment Fragment) SQL() string { return fragment.sql }
 
-// Args returns a shallow copy of the bound arguments.
+// Args returns a shallow copy of the bound arguments. Mutable values inside
+// that slice remain shared; do not treat it as a deep-copy boundary.
 func (fragment Fragment) Args() []any {
 	return append([]any(nil), fragment.args...)
 }
 
-// GeographyDWithin constructs a geography distance predicate.
+// GeographyDWithin constructs a geography distance predicate with two bound
+// arguments. It requires numeric SRID 4326, not a matching CRS name, and does
+// not verify that coordinate metadata reflects the real-world input datum.
+// Callers own query execution and installation-specific geography OID setup.
 func GeographyDWithin(
 	column Column,
 	geometry geo.Geometry,

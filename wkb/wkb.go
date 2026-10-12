@@ -1,4 +1,8 @@
 // Package wkb provides bounded two-dimensional WKB and PostGIS EWKB codecs.
+// Decoders consume input synchronously without retaining its mutable bytes.
+// Errors may wrap parser causes containing input; redact before logging.
+// Coordinates retain geographic scalar ranges even for custom SRID metadata.
+// Encoders return owned output without a configurable encoded-byte ceiling.
 package wkb
 
 import (
@@ -70,7 +74,9 @@ func Unmarshal(data []byte, crs geo.CRS, limits geo.Limits) (geo.Geometry, error
 }
 
 // UnmarshalEWKB decodes bounded PostGIS EWKB. A positive top-level SRID is
-// mandatory; nested SRIDs, when present, must match it.
+// mandatory; nested SRIDs, when present, must match it. Child records without
+// the SRID flag inherit the parent even though their layout matches plain WKB.
+// Decoding synthesizes EPSG:<SRID> names, not arbitrary stored CRS labels.
 func UnmarshalEWKB(data []byte, limits geo.Limits) (geo.Geometry, error) {
 	limits = geo.ResolveLimits(limits)
 	if int64(len(data)) > limits.MaxEncodedBytes {

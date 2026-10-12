@@ -6,6 +6,10 @@ import (
 	geo "github.com/faustbrian/go-geo"
 )
 
+// FuzzGeometryConstructors truncates bytes, then builds/reverses bounded rings
+// and nested collections. Discarded outcomes target panic safety; deterministic
+// topology and limit assertions remain a separate boundary.
+
 func FuzzGeometryConstructors(f *testing.F) {
 	f.Add([]byte{0, 0, 127, 127, 255, 255})
 	f.Add([]byte{128, 64, 32, 16})

@@ -1,5 +1,6 @@
 // Package geotest provides reusable numerical tolerances, assertions, and
-// authoritative conformance vectors for consumers of geo.
+// selected published reference vectors for consumers of geo. These cases do
+// not certify complete OGC or GeographicLib conformance.
 package geotest
 
 import (
@@ -34,6 +35,8 @@ func (tolerance Tolerance) Absolute() float64 { return tolerance.absolute }
 func (tolerance Tolerance) Relative() float64 { return tolerance.relative }
 
 // Within reports whether two finite numbers satisfy this tolerance.
+// Comparisons use ordinary float64 arithmetic; at extreme finite magnitudes,
+// subtraction or the relative bound can overflow. This is not an exact oracle.
 func (tolerance Tolerance) Within(got, want float64) bool {
 	if math.IsNaN(got) || math.IsNaN(want) ||
 		math.IsInf(got, 0) || math.IsInf(want, 0) {
@@ -46,7 +49,9 @@ func (tolerance Tolerance) Within(got, want float64) bool {
 
 // TestingT is the assertion surface implemented by testing.T and testing.B.
 type TestingT interface {
+	// Helper marks the caller as test support for failure attribution.
 	Helper()
+	// Errorf records a non-fatal formatted assertion failure.
 	Errorf(format string, args ...any)
 }
 
@@ -73,45 +78,69 @@ func AssertClose(
 // InverseVector is an authoritative WGS84 inverse-geodesic case. Coordinates
 // are explicitly longitude first; distances are metres and bearings degrees.
 type InverseVector struct {
-	Name           string
-	FromLongitude  float64
-	FromLatitude   float64
-	ToLongitude    float64
-	ToLatitude     float64
+	// Name identifies the reference case or probe.
+	Name string
+	// FromLongitude is the starting longitude in degrees.
+	FromLongitude float64
+	// FromLatitude is the starting latitude in degrees.
+	FromLatitude float64
+	// ToLongitude is the ending longitude in degrees.
+	ToLongitude float64
+	// ToLatitude is the ending latitude in degrees.
+	ToLatitude float64
+	// DistanceMeters is the reference path length in metres.
 	DistanceMeters float64
+	// InitialBearing is the reference forward azimuth at the start, in degrees.
 	InitialBearing float64
-	FinalBearing   float64
+	// FinalBearing is the reference forward azimuth at the endpoint, in degrees.
+	FinalBearing float64
 }
 
 // DistanceVector is an authoritative WGS84 inverse-distance case whose
 // bearings are intentionally not part of the assertion. Coordinates are
 // longitude first, distances and absolute tolerances are metres.
 type DistanceVector struct {
-	Name                    string
-	Source                  string
-	FromLongitude           float64
-	FromLatitude            float64
-	ToLongitude             float64
-	ToLatitude              float64
-	DistanceMeters          float64
+	// Name identifies the reference case or probe.
+	Name string
+	// Source names the provenance recorded for the vector.
+	Source string
+	// FromLongitude is the starting longitude in degrees.
+	FromLongitude float64
+	// FromLatitude is the starting latitude in degrees.
+	FromLatitude float64
+	// ToLongitude is the ending longitude in degrees.
+	ToLongitude float64
+	// ToLatitude is the ending latitude in degrees.
+	ToLatitude float64
+	// DistanceMeters is the reference path length in metres.
+	DistanceMeters float64
+	// AbsoluteToleranceMeters is the absolute comparison budget for this rounded reference.
 	AbsoluteToleranceMeters float64
 }
 
 // PolygonProbe is a longitude-first point with its expected OGC location.
 type PolygonProbe struct {
-	Name      string
+	// Name identifies the reference case or probe.
+	Name string
+	// Longitude is the probe longitude in degrees.
 	Longitude float64
-	Latitude  float64
-	Location  geo.Location
+	// Latitude is the probe latitude in degrees.
+	Latitude float64
+	// Location is the expected planar three-state classification.
+	Location geo.Location
 }
 
 // PolygonLocationVector is an authoritative planar polygon and point-location
 // case. Rings contain longitude-first coordinate pairs and are closed.
 type PolygonLocationVector struct {
-	Name     string
+	// Name identifies the reference case or probe.
+	Name string
+	// Exterior is a mutable, closed longitude-first shell.
 	Exterior [][2]float64
-	Holes    [][][2]float64
-	Probes   []PolygonProbe
+	// Holes contains mutable, closed longitude-first interior rings.
+	Holes [][][2]float64
+	// Probes contains point-location assertions for this polygon.
+	Probes []PolygonProbe
 }
 
 var wgs84InverseVectors = []InverseVector{
