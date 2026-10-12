@@ -113,3 +113,12 @@ The API baseline, dependency bytes, seven saved fuzz inputs, PostGIS fixture,
 authority pins and dated qualification reports are preserved. Final ordinary
 diff and changed-content/staged secret inspection precede the local commit;
 remote main and CI delivery remain the coordinator's responsibility.
+
+## Objective Enforcement
+
+The checksum-pinned public Tools v2.4.0 verifier now supplies
+`make source-docs-check` as a prerequisite of the existing local and CI Make
+routes. Ordinary shared CI selects strict source-documentation checking and
+requires its result. Native prerequisites, operation budgets, security and
+release controls are retained. Hosted exact-head evidence is recorded by the
+coordination ledger; configuration alone does not establish green delivery.
