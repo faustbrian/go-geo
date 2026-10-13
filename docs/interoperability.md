@@ -1,5 +1,8 @@
 # Codecs, pgx, and PostGIS
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 ## GeoJSON
 
 `geojson.Marshal` and `Unmarshal` support every package geometry.

@@ -1,5 +1,8 @@
 # Specification decisions
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 This register records every observable standards interpretation. The machine
 contract is `../specification/decisions.json`; conformance bindings are in
 `../specification/conformance.json`. Unknown behavior remains unresolved rather

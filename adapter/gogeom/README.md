@@ -1,5 +1,8 @@
 # go-geom compatibility adapter
 
+[Documentation map](../../docs/index.md) · [Repository README](../../README.md)
+[Next: Documentation map](../../docs/index.md)
+
 `github.com/faustbrian/go-geo/adapter/gogeom` is the deprecated compatibility
 path for conversion between immutable `geo.Geometry` values and caller-owned
 `github.com/twpayne/go-geom` values. New code should use
@@ -29,4 +32,4 @@ subsequently published stable minor releases. See the
 [verification evidence](../../docs/verification.md), and
 [API reference](https://pkg.go.dev/github.com/faustbrian/go-geo/adapter/gogeom).
 The shared ecosystem conventions are documented in the
-[versioned design language](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md).
+[versioned design language](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/design-language.md).

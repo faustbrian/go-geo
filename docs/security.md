@@ -1,5 +1,8 @@
 # Security model
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 Version 1 (2026-09-30). This model covers the root geometry module, its WKB,
 WKT, GeoJSON, geohash, and geodesy packages, and the go-geom and PostGIS
 adapters. The go-geo maintainers own package controls; integrating services own

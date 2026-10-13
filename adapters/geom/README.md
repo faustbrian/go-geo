@@ -1,5 +1,8 @@
 # Canonical go-geom adapter
 
+[Documentation map](../../docs/index.md) · [Repository README](../../README.md)
+[Next: Documentation map](../../docs/index.md)
+
 `github.com/faustbrian/go-geo/adapters/geom` (package `geogeom`) is the
 canonical conversion boundary between immutable `geo.Geometry` values and
 caller-owned `github.com/twpayne/go-geom` values.
@@ -32,4 +35,4 @@ See the [migration and compatibility guide](../../docs/adoption.md),
 [verification evidence](../../docs/verification.md), and
 [API reference](https://pkg.go.dev/github.com/faustbrian/go-geo/adapters/geom).
 The shared ecosystem conventions are documented in the
-[versioned design language](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md).
+[versioned design language](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/design-language.md).

@@ -1,5 +1,8 @@
 # Specification conformance matrix
 
+[Documentation map](../docs/index.md) · [Repository README](../README.md)
+[Next: Documentation map](../docs/index.md)
+
 The [specification decision register](../docs/specification-decisions.md)
 records rationale and consequences. Machine-readable evidence bindings live in
 `conformance.json`; authority monitoring and source pins live beside it.

@@ -1,5 +1,8 @@
 # Runnable examples
 
+[Documentation map](../docs/index.md) · [Repository README](../README.md)
+[Next: Documentation map](../docs/index.md)
+
 Each directory is an independent `main` package:
 
 | Scenario | Command |

@@ -1,5 +1,8 @@
 # Models, bounds, and precision
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 ## Coordinates and CRS
 
 Coordinates are `(longitude, latitude)` in every API and codec. WGS84 is

@@ -1,5 +1,8 @@
 # Dependency inventory
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 Direct dependencies are deliberately isolated behind package-owned contracts.
 This inventory must be reviewed whenever `go.mod` changes.
 

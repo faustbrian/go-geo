@@ -1,5 +1,8 @@
 # Security, limits, and performance
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 The [versioned security model](security.md) identifies trust boundaries,
 package controls, residual-risk owners, and review conditions.
 

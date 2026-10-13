@@ -1,5 +1,8 @@
 # Compatibility, migration, troubleshooting, and FAQ
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Security model](security.md)
+
 ## Compatibility policy
 
 Major versions may refine APIs with changelog and migration notes.

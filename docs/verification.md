@@ -1,5 +1,8 @@
 # Numerical and interoperability verification
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 This document records executable evidence and residual numerical limits. It is
 not a promise that
 latency is identical on other machines or that dependency advisories cannot

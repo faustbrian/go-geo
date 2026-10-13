@@ -1,5 +1,8 @@
 # Source documentation audit
 
+[Documentation map](index.md) · [Repository README](../README.md)
+[Next: Compatibility, migration, troubleshooting, and FAQ](adoption.md)
+
 ## Contract and boundary
 
 This Tier A pass owns source comments and directly contradicted current prose
