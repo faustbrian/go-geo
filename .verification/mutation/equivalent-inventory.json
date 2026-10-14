@@ -4,33 +4,33 @@
     {
       "module_directory": ".",
       "package_directory": "wkb",
-      "source_digest": "525cfb9578cd437dd7fbb811a0371e29797a02591c2f1926cec60604cd9e58af",
+      "source_digest": "354f907790ce0a75192583116864f418f81f5a804ee97ca64ecc07a521a26bb1",
       "gremlins_version": "v0.6.0",
       "gremlins_verifier_sha256": "390cf4085a0063fe5dcaa29ce942ea4cb8c7876347da90376b65dc8c5c811104",
       "mutations": [
         {
           "file_name": "wkb.go",
           "type": "CONDITIONALS_BOUNDARY",
-          "line": 554,
+          "line": 560,
           "column": 18,
           "contract_domain": "Capacity hints for safely constructed owned LineString coordinate slices",
-          "reason": "Replacing length > threshold with length >= threshold changes only equality. Each Coordinate contains two float64 values and a CRS, so its element size exceeds the 16-byte wire width. A safely allocated coordinate slice cannot have the approximately MaxInt/16 elements required for equality: its backing allocation would exceed MaxInt bytes. All reachable comparisons and hints are identical. No unsafe fabricated slice is a supported geometry."
+          "reason": "Replacing length > threshold with length >= threshold changes only equality. Each Coordinate contains two float64 values and a CRS, so its element size exceeds the 16-byte wire width. A safely allocated coordinate slice cannot have the approximately MaxInt/16 elements required for equality: its backing allocation would exceed MaxInt bytes. All reachable comparisons and hints are identical. No unsafe fabricated slice is a supported geometry. Historical MaxInt-byte reasoning above is not a general32-bit allocator bound. Exact constructor proof: NewLineStringWithLimits clones input coordinates; both arrays coexist, each Coordinate at least24bytes. At equality q, combined48*q exceeds entire unsigned address space on32/64bits (6442450896/27670116110564327376). PrivateLen/closedGeometrydispatch exclude safe bypass; unsafe fabricated/racy values unsupported. Coordinate layout/construction/copy ownership, dispatch/Len, header/threshold/intwidth orGoallocation changes invalidate applicability. Current source applicability reviewed2026-10-14 by /root/filesystem_repair; six WKB prose lines move unchanged operator554 to560, same verifier390cf. Expires2026-11-14 or earlier affected production/caller/Go/verifier assumption change; fresh native qualification remains required."
         },
         {
           "file_name": "wkb.go",
           "type": "INVERT_NEGATIVES",
-          "line": 554,
+          "line": 560,
           "column": 39,
           "contract_domain": "Integer capacity thresholds with WKB header 5 or EWKB header 9 on supported Go architectures",
-          "reason": "Replacing the final numerator -4 with +4 adds eight before division by16. MaxInt is15 modulo16; for header5 or9 the original numerator remainders are6 or2 and the changed remainders14 or10. The integer quotient is identical, no numerator overflows, and all admission comparisons and capacity hints remain unchanged."
+          "reason": "Replacing the final numerator -4 with +4 adds eight before division by16. MaxInt is15 modulo16; for header5 or9 the original numerator remainders are6 or2 and the changed remainders14 or10. The integer quotient is identical, no numerator overflows, and all admission comparisons and capacity hints remain unchanged. Rechecked positive numerators/nooverflow and identical integerquotient for headers5/9 on32/64bits; no additionaloperator is allowed. Current source applicability reviewed2026-10-14 by /root/filesystem_repair; six WKB prose lines move unchanged operator554 to560, same verifier390cf. Expires2026-11-14 or earlier affected production/caller/Go/verifier assumption change; fresh native qualification remains required."
         },
         {
           "file_name": "wkb.go",
           "type": "ARITHMETIC_BASE",
-          "line": 554,
+          "line": 560,
           "column": 39,
           "contract_domain": "Integer capacity thresholds with WKB header 5 or EWKB header 9 on supported Go architectures",
-          "reason": "This Gremlins operator makes the same -4 to +4 replacement as INVERT_NEGATIVES at this coordinate. Adding eight changes numerator remainders6/2 to14/10 for headers5/9 without overflow or changing the quotient after division by16. The comparison and capacity hints are therefore identical."
+          "reason": "This Gremlins operator makes the same -4 to +4 replacement as INVERT_NEGATIVES at this coordinate. Adding eight changes numerator remainders6/2 to14/10 for headers5/9 without overflow or changing the quotient after division by16. The comparison and capacity hints are therefore identical. Rechecked positive numerators/nooverflow and identical integerquotient for headers5/9 on32/64bits; no additionaloperator is allowed. Current source applicability reviewed2026-10-14 by /root/filesystem_repair; six WKB prose lines move unchanged operator554 to560, same verifier390cf. Expires2026-11-14 or earlier affected production/caller/Go/verifier assumption change; fresh native qualification remains required."
         }
       ]
     }
