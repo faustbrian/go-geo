@@ -56,8 +56,9 @@ if err != nil { /* handle */ }
 metres := result.Distance().Meters()
 ```
 
-CRS-checking operations reject incompatible metadata; GeographyDWithin checks
-numeric SRID 4326 rather than the CRS name. No package transforms coordinates.
+CRS-checking operations reject incompatible metadata; GeographyDWithin requires
+exact WGS84 SRID and name metadata. No package transforms coordinates or verifies
+that caller metadata truthfully describes the physical input datum.
 
 ## Packages
 
@@ -100,9 +101,10 @@ for the shared design language this module follows.
 - Default limits bound points, rings, geometries, nesting, and encoded bytes.
 - Errors support `errors.Is` with `geo.ErrRange`, `geo.ErrTopology`,
   `geo.ErrCRS`, `geo.ErrEncoding`, and `geo.ErrUnsupported`.
-- Inverse bearing validity uses model-specific equality/angle checks, not
-  general geographic coincidence; equivalent pole/dateline encodings and
-  near-antipodal results need caller interpretation.
+- Inverse models return zero distance and undefined bearings for exact geographic
+  coincidence, including equivalent pole/dateline encodings. Distinct nearby
+  points are not collapsed by a tolerance; near-antipodal results still need
+  caller interpretation and the flag does not certify general uniqueness.
 
 ## Choosing process code or PostGIS
 

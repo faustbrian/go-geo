@@ -238,9 +238,9 @@
         "Require explicit EPSG:4326 and expose separately named spherical and ellipsoidal models without transformation."
       ],
       "peer_behavior": "PostGIS provides explicit geometry and geography casts and agrees with the checked WGS84 geography results; GeographicLib vectors agree with the ellipsoidal implementation.",
-      "selected_behavior": "geo.WGS84 returns explicit EPSG:4326 metadata. Geodesy requires exact WGS84 SRID and name; GeographyDWithin checks numeric SRID 4326 only. Neither transforms coordinates. WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.",
+      "selected_behavior": "geo.WGS84 returns explicit EPSG:4326 metadata. Geodesy and GeographyDWithin require exact WGS84 SRID and name. Neither transforms coordinates. WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.",
       "rationale": "Model and transformation choices materially affect distance and must remain visible at the call site.",
-      "security_consequences": "Geodesy rejects foreign CRS metadata; GeographyDWithin rejects other numeric SRIDs but accepts any name for 4326. Callers must ensure that supplied metadata truthfully describes the input datum.",
+      "security_consequences": "Geodesy and GeographyDWithin reject foreign CRS metadata. Callers must still ensure that supplied metadata truthfully describes the input datum; no physical-datum authentication or transformation occurs.",
       "resource_consequences": "No CRS database, grid file, or network lookup occurs; numerical work is bounded per operation.",
       "compatibility_consequences": "Projected inputs must be transformed by an explicitly selected external component before geodesy or geography use.",
       "wire_consequences": "SRIDs are preserved as metadata by extended codecs but no coordinate bytes are transformed.",

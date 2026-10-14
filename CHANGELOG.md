@@ -13,6 +13,36 @@ versioning.
   GEO-GEOJSON-DEC-002, GEO-OGC-DEC-002 and GEO-EPSG-DEC-001 descriptions with
   their implemented allocation and CRS boundaries; preserve prior history.
 
+## 1.1.6 - 2026-10-14
+
+### Fixed
+
+- Restore exact geographic coincidence at poles and the dateline for both inverse
+  models without changing stored-coordinate equality or collapsing nearby paths.
+- Require one complete string or number Feature ID and propagate geometry encode
+  failures instead of publishing null; genuinely absent geometry remains null.
+- Restore exact WGS84 SRID/name admission for geography SQL fragments under
+  GEO-EPSG-DEC-001. Metadata does not authenticate a physical datum or transform
+  coordinates; callers using SRID 4326 with other labels must attach truthful
+  WGS84 metadata before calling GeographyDWithin.
+- GEO-EPSG-DEC-001 sha256:295ccedff298d882a03e0e6aed3048695e74ff842688a3c2131507b1d460c0fe
+
+### Source accountability
+
+Prepared from the eight non-merge commits after public v1.1.5 source
+`3795753bd795452aa24e3315f8d8536986dac1c4` through
+`add56d02528f4e2ee0934effc4118e922db990a4`. The restoration is delivered
+separately after that frozen range. Existing Unreleased notes are preserved.
+
+- `110176b552e4d74310da6837206de94f2334a40c` — ci: adopt bounded published verification
+- `cbe08ba55717d77c91c59836776a045e0183a627` — ci: add bounded selected assurance
+- `f3a9fa82ea12f4e38523a185a7dee39887efa1ea` — docs: standardize repository development policy
+- `2eae7d3bd59b41f6dcf0257681cebf96e02d1fb4` — chore: cover non-Go dependency updates
+- `5bb065b1082ac76496db6ab8adc0abdf4c4cabae` — chore: adopt supply-chain tooling v2.3.0
+- `9475075df5dbdf594415e391c579f3934deb91d6` — docs: document geometry and codec contracts
+- `7a35065dd438f4ec64dbc5514d558193d3da5a37` — chore: enforce source documentation contracts
+- `add56d02528f4e2ee0934effc4118e922db990a4` — docs: improve package adoption navigation
+
 ## 1.1.5 - 2026-10-08
 
 ### Changed

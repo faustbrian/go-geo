@@ -27,9 +27,10 @@ arrays and raw child JSON before constructor aggregate checks. Constructors
 validate topology after their structural/resource checks.
 
 Codec decoders reject malformed numbers, excessive nesting and trailing
-document data. NewFeature is a constructor, not a decoder: its ID validation
-reads only the first string/number token. Supply one complete JSON ID. No
-encoder accepts a configurable output-byte ceiling.
+document data. NewFeature requires one complete string/number JSON ID and copies
+its raw bytes without number coercion. MarshalFeature propagates geometry
+encoding failures without publishing bytes; actually absent geometry stays null.
+No encoder accepts a configurable output-byte ceiling.
 
 These limits make work finite; they do not promise acceptable request latency.
 Polygon validity uses an upstream robust planar topology implementation whose

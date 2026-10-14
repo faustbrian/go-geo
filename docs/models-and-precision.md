@@ -29,12 +29,10 @@ distance; do not represent it as an ellipsoidal answer. `geodesy.NewSphere`
 supports an explicitly chosen positive radius.
 
 Inverse operations are symmetric in distance, but initial and final bearings
-depend on direction. The degeneracy flag is model-specific: Sphere tests its
-computed central angle
-against zero and pi; Ellipsoid tests exact Coordinate equality and mathematical
-antipodes. Different longitudes at one pole or -180/+180 dateline encodings can
-represent one location yet remain flagged defined. `BearingsDefined()` is not
-a geographic-coincidence detector. Exact mathematical antipodes have no unique
+depend on direction. Both models detect exact geographic coincidence, including
+different longitudes at one pole and -180/+180 dateline encodings, returning
+zero distance and undefined bearings. No distance tolerance collapses nearby
+distinct points. Root Coordinate.Equal retains its stored-coordinate semantics. Exact mathematical antipodes have no unique
 bearing, but floating-point angle detection also has numerical limits.
 Near-antipodal azimuths can be
 ill-conditioned, and symmetric ellipsoidal cases may have multiple shortest

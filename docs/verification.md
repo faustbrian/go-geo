@@ -33,9 +33,9 @@ There is no package-wide spherical-versus-ellipsoidal error bound because the
 error depends on latitude, direction, and distance. Callers requiring an earth
 accuracy claim must select `WGS84Ellipsoid`.
 
-`BearingsDefined` uses model-specific stored equality/central-angle tests, not
-general geographic coincidence; distinct pole/dateline encodings can remain
-flagged defined.
+`BearingsDefined` rejects exact geographic coincidence, including equivalent
+pole/dateline encodings. This is an exact identity test, not a distance epsilon
+or a change to root Coordinate.Equal.
 Near-antipodal azimuths may still be ill-conditioned, and symmetric ellipsoidal
 cases can have more than one shortest geodesic. The method is not a general
 uniqueness certificate.

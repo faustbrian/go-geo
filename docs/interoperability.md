@@ -9,11 +9,10 @@
 `MarshalFeature` and `UnmarshalFeature` support a geometry, optional ID, and an
 owned JSON property object. Raw property/ID bytes are copied at construction;
 encoding/json can compact their whitespace on output. NewFeature validates
-only the first ID token and does not require WGS84 geometry: supply complete
-JSON IDs and exact WGS84 metadata when the Feature will be marshaled.
-MarshalFeature ignores a nested geometry encoding error and emits null geometry
-instead; callers must not interpret a successful Feature marshal as geometry
-CRS validation. GeoJSON has no standard SRID field here: callers
+one complete string or number ID without number coercion. It does not require
+WGS84 geometry at construction; MarshalFeature propagates nested encoding errors
+without bytes instead of converting a failed geometry into null. An actually
+absent geometry remains null. GeoJSON has no standard SRID field here: callers
 must supply the CRS when decoding. Coordinate order remains longitude,
 latitude.
 
@@ -98,8 +97,9 @@ separate arguments. They never interpolate values. The caller owns the full
 query and must pass the returned arguments in placeholder order.
 
 Use `GeographyDWithin` for metre distances on WGS84 geography. It checks numeric
-SRID 4326 only, unlike geodesy's exact SRID/name check; callers must attach
-truthful datum metadata. Use `Intersects`
+SRID 4326 and the exact WGS84 name, like geodesy; callers must still attach
+truthful datum metadata. This check does not authenticate physical coordinates
+or transform a datum. Use `Intersects`
 for the column's geometry coordinate system. These helpers are intentionally not
 a query builder.
 

@@ -27,7 +27,7 @@
     },
     {
       "id": "GEO-EPSG-DEC-001",
-      "digests": ["3e420bc9960d2f42169f0bfda8ec50fd3bb752ae0be8d52c7760cd260b32b373", "0abe5eae8b79dd1ab147870506f7df93a1e0a806e583ff81e61c51a1ec998cfc"]
+      "digests": ["3e420bc9960d2f42169f0bfda8ec50fd3bb752ae0be8d52c7760cd260b32b373", "0abe5eae8b79dd1ab147870506f7df93a1e0a806e583ff81e61c51a1ec998cfc", "295ccedff298d882a03e0e6aed3048695e74ff842688a3c2131507b1d460c0fe"]
     },
     {
       "id": "GEO-GEOHASH-DEC-001",

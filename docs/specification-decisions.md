@@ -153,9 +153,9 @@ than becoming an undocumented default.
 - **Issue:** EPSG:4326 identifies the WGS 84 geographic CRS and ellipsoid but does not select whether a utility API should transform other CRSs, use ellipsoidal or spherical distance, or silently relabel ordinates.
 - **Credible interpretations:** Transform every known SRID internally. | Treat every angular coordinate as WGS 84. | Require explicit EPSG:4326 and expose separately named spherical and ellipsoidal models without transformation.
 - **Peer behavior:** PostGIS provides explicit geometry and geography casts and agrees with the checked WGS84 geography results; GeographicLib vectors agree with the ellipsoidal implementation.
-- **Selected behavior:** geo.WGS84 returns explicit EPSG:4326 metadata. Geodesy requires exact WGS84 SRID and name; GeographyDWithin checks numeric SRID 4326 only. Neither transforms coordinates. WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.
+- **Selected behavior:** geo.WGS84 returns explicit EPSG:4326 metadata. Geodesy and GeographyDWithin require exact WGS84 SRID and name. Neither transforms coordinates. WGS84Ellipsoid uses the WGS 84 ellipsoid, and MeanEarthSphere remains an explicitly approximate IUGG-radius model.
 - **Rationale:** Model and transformation choices materially affect distance and must remain visible at the call site.
-- **Security consequences:** Geodesy rejects foreign CRS metadata; GeographyDWithin rejects other numeric SRIDs but accepts any name for 4326. Callers must ensure that supplied metadata truthfully describes the input datum.
+- **Security consequences:** Geodesy and GeographyDWithin reject foreign CRS metadata. Callers must still ensure that supplied metadata truthfully describes the input datum; no physical-datum authentication or transformation occurs.
 - **Resource consequences:** No CRS database, grid file, or network lookup occurs; numerical work is bounded per operation.
 - **Compatibility consequences:** Projected inputs must be transformed by an explicitly selected external component before geodesy or geography use.
 - **Wire consequences:** SRIDs are preserved as metadata by extended codecs but no coordinate bytes are transformed.

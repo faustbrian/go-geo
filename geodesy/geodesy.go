@@ -31,10 +31,9 @@ func (result InverseResult) InitialBearing() geo.Bearing { return result.initial
 // FinalBearing returns the forward bearing at the destination coordinate.
 func (result InverseResult) FinalBearing() geo.Bearing { return result.finalBearing }
 
-// BearingsDefined reports the model's degeneracy flag, not geographic equality
-// or uniqueness. Sphere tests its computed central angle against zero and pi;
-// Ellipsoid tests exact Coordinate equality and mathematical antipodes. Distinct
-// encodings of the same pole or dateline can therefore remain flagged defined.
+// BearingsDefined is false for geographically coincident coordinates, including
+// equivalent pole and dateline encodings, and detected exact antipodes. It is
+// not a general certificate of shortest-geodesic uniqueness.
 func (result InverseResult) BearingsDefined() bool { return result.bearingsDefined }
 
 // Sphere solves great-circle problems on a sphere of an explicit radius.
@@ -81,6 +80,9 @@ func (sphere Sphere) Inverse(from, to geo.Coordinate) (InverseResult, error) {
 			Minimum:   math.SmallestNonzeroFloat64,
 			Maximum:   math.MaxFloat64,
 		}
+	}
+	if coincident(from, to) {
+		return InverseResult{distance: mustDistance(0)}, nil
 	}
 
 	lat1 := radians(from.Latitude().Degrees())
@@ -167,7 +169,7 @@ func (Ellipsoid) Inverse(from, to geo.Coordinate) (InverseResult, error) {
 	if err := requireWGS84(from, to); err != nil {
 		return InverseResult{}, err
 	}
-	if from.Equal(to) {
+	if coincident(from, to) {
 		return InverseResult{distance: mustDistance(0)}, nil
 	}
 
@@ -205,6 +207,22 @@ func (Ellipsoid) Destination(
 	destination := coordinate(result.Lon2, result.Lat2)
 
 	return destination, mustBearing(result.Azi2), nil
+}
+
+// coincident compares exact geographic identity without introducing a distance
+// tolerance. Longitude has no positional meaning at a pole; the two closed
+// dateline endpoints represent the same meridian.
+func coincident(from, to geo.Coordinate) bool {
+	latitude := from.Latitude().Degrees()
+	if latitude != to.Latitude().Degrees() {
+		return false
+	}
+	fromLongitude := from.Longitude().Degrees()
+	toLongitude := to.Longitude().Degrees()
+	return math.Abs(latitude) == 90 ||
+		fromLongitude == toLongitude ||
+		(fromLongitude == -180 && toLongitude == 180) ||
+		(fromLongitude == 180 && toLongitude == -180)
 }
 
 func requireWGS84(coordinates ...geo.Coordinate) error {

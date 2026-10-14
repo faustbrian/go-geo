@@ -315,7 +315,7 @@ func (fragment Fragment) Args() []any {
 }
 
 // GeographyDWithin constructs a geography distance predicate with two bound
-// arguments. It requires numeric SRID 4326, not a matching CRS name, and does
+// arguments. It requires exact WGS84 SRID and name metadata, and does
 // not verify that coordinate metadata reflects the real-world input datum.
 // Callers own query execution and installation-specific geography OID setup.
 func GeographyDWithin(
@@ -340,7 +340,7 @@ func GeographyDWithin(
 	if err != nil {
 		return Fragment{}, err
 	}
-	if value.geometry.CRS().SRID() != geo.WGS84().SRID() {
+	if !value.geometry.CRS().Equal(geo.WGS84()) {
 		return Fragment{}, &geo.CRSError{
 			SRID:    geometrySRID(value.geometry),
 			Problem: "geography requires EPSG:4326",

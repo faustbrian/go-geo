@@ -110,8 +110,7 @@ Fragment.Args copies only its outer slice; mutable argument contents remain
 shared. Immutable geometry backing storage may be shared internally.
 
 **Does `BearingsDefined` prove the shortest geodesic is unique?** No. It uses
-model-specific equality/angle tests, not general geographic coincidence.
-Special symmetric and
+exact geographic-coincidence and model-specific antipode tests. Special symmetric and
 near-antipodal ellipsoidal cases can still have multiple or sensitive azimuths.
 
 **What evidence blocks a release?** The numerical/tolerance matrix, codec and

@@ -27,9 +27,8 @@ type Feature struct {
 }
 
 // NewFeature owns optional geometry, properties and ID bytes. It checks each
-// property as complete JSON, but the ID check reads only the first string or
-// number token; callers must supply one complete ID. It does not require WGS84
-// geometry or apply geo.Limits. Validate the CRS before MarshalFeature.
+// property and ID as complete JSON; an ID must be a string or number. It does
+// not require WGS84 geometry or apply geo.Limits. MarshalFeature validates CRS.
 func NewFeature(
 	geometry geo.Geometry,
 	properties map[string]json.RawMessage,
@@ -100,13 +99,16 @@ func Unmarshal(data []byte, crs geo.CRS, limits geo.Limits) (geo.Geometry, error
 
 // MarshalFeature encodes a Feature with deterministic member order.
 // A non-WGS84 geometry accepted by NewFeature cannot be encoded by Marshal;
-// MarshalFeature ignores that nested error and emits a null geometry instead.
+// MarshalFeature returns that nested error without publishing bytes.
 // Validated raw values are represented through encoding/json, not guaranteed
 // byte-for-byte preservation of their original whitespace.
 func MarshalFeature(feature Feature) ([]byte, error) {
 	geometry := json.RawMessage("null")
 	if feature.geometry != nil {
-		encoded, _ := Marshal(feature.geometry)
+		encoded, err := Marshal(feature.geometry)
+		if err != nil {
+			return nil, err
+		}
 		geometry = encoded
 	}
 
@@ -425,8 +427,7 @@ func validateInput(data []byte, crs geo.CRS, limits geo.Limits) error {
 	return nil
 }
 
-// validateID uses the decoder's first token without an EOF check;
-// this is not complete-document validation of a constructor-provided raw ID.
+// validateID admits one complete scalar without coercing its number lexeme.
 func validateID(id json.RawMessage) error {
 	if len(id) == 0 {
 		return nil
@@ -436,6 +437,9 @@ func validateID(id json.RawMessage) error {
 	var value any
 	if err := decoder.Decode(&value); err != nil {
 		return encodingError("feature id is not valid JSON", err)
+	}
+	if !json.Valid(id) {
+		return encodingError("feature id is not valid JSON", nil)
 	}
 	switch value.(type) {
 	case string, json.Number:
