@@ -13,6 +13,12 @@ versioning.
   GEO-GEOJSON-DEC-002, GEO-OGC-DEC-002 and GEO-EPSG-DEC-001 descriptions with
   their implemented allocation and CRS boundaries; preserve prior history.
 
+## 1.1.7 - 2026-10-22
+
+### Changed
+
+- Publish the current source and documentation with a fresh immutable tag.
+
 ## 1.1.6 - 2026-10-14
 
 ### Fixed
